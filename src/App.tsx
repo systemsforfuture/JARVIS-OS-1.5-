@@ -16,6 +16,7 @@ import OmiPage from "@/pages/OmiPage";
 import ServicesPage from "@/pages/ServicesPage";
 import OnboardingPage from "@/pages/OnboardingPage";
 import SettingsPage from "@/pages/SettingsPage";
+import VirtualOfficePage from "@/pages/VirtualOfficePage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ const App = () => (
             <Route path="/services" element={<ServicesPage />} />
             <Route path="/onboarding" element={<OnboardingPage />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/office" element={<VirtualOfficePage />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
