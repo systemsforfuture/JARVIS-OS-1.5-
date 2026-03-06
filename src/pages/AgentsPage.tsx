@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { api } from "@/lib/api";
-import { AGENT_DEFAULTS, AGENT_EMOJIS } from "@/lib/types";
+import { AGENT_DEFAULTS, AGENT_EMOJIS, SKILLS_REGISTRY } from "@/lib/types";
 import type { Agent } from "@/lib/types";
 import { AgentCard } from "@/components/AgentCard";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
