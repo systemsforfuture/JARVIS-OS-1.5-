@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { api } from "@/lib/api";
-import { AGENT_DEFAULTS, AGENT_EMOJIS } from "@/lib/types";
+import { AGENT_DEFAULTS, AGENT_EMOJIS, SKILLS_REGISTRY } from "@/lib/types";
 import type { Agent } from "@/lib/types";
 import { AgentCard } from "@/components/AgentCard";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -136,6 +136,23 @@ export default function AgentsPage() {
                   </div>
                 ))}
               </div>
+
+              {/* Skills */}
+              {selected.skills && selected.skills.length > 0 && (
+                <div className="mt-4">
+                  <label className="text-[10px] font-display tracking-wider text-muted-foreground block mb-2">SKILLS ({selected.skills.length})</label>
+                  <div className="flex gap-1.5 flex-wrap">
+                    {selected.skills.map(skillSlug => {
+                      const skillInfo = SKILLS_REGISTRY.find(s => s.slug === skillSlug);
+                      return (
+                        <span key={skillSlug} className="text-[10px] font-mono bg-jarvis-gold/8 border border-jarvis-gold/15 text-jarvis-gold/80 px-2 py-1 rounded" title={skillInfo?.description}>
+                          {skillInfo?.name || skillSlug}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </>
           )}
         </DialogContent>

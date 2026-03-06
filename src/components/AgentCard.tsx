@@ -1,4 +1,5 @@
-import { Agent, AGENT_EMOJIS } from "@/lib/types";
+import { Agent, AGENT_EMOJIS, SKILLS_REGISTRY } from "@/lib/types";
+import { Zap } from "lucide-react";
 
 interface AgentCardProps {
   agent: Agent;
@@ -33,6 +34,7 @@ export function AgentCard({ agent, onClick, compact }: AgentCardProps) {
   const statusColor = agent.status === 'active' ? 'bg-jarvis-success' : agent.status === 'standby' ? 'bg-jarvis-warning' : 'bg-jarvis-error';
   const teamColor = TEAM_COLORS[agent.team] || 'border-border bg-secondary';
   const teamTextColor = TEAM_TEXT_COLORS[agent.team] || 'text-muted-foreground';
+  const skillCount = agent.skills?.length ?? 0;
 
   if (compact) {
     return (
@@ -66,6 +68,18 @@ export function AgentCard({ agent, onClick, compact }: AgentCardProps) {
           <div className="text-[12px] text-muted-foreground">{agent.role}</div>
         </div>
       </div>
+
+      {/* Skills preview */}
+      {skillCount > 0 && (
+        <div className="flex items-center gap-1.5 mb-3 text-[10px] text-muted-foreground">
+          <Zap className="w-3 h-3 text-jarvis-gold/60" />
+          <span className="font-mono">{skillCount} Skills</span>
+          <span className="truncate text-muted-foreground/50">
+            · {agent.skills.slice(0, 3).join(', ')}{skillCount > 3 ? ` +${skillCount - 3}` : ''}
+          </span>
+        </div>
+      )}
+
       <div className="flex gap-2 flex-wrap">
         <span className={`text-[10px] font-display font-semibold tracking-wider px-2 py-0.5 rounded border ${teamColor} ${teamTextColor}`}>
           {agent.team.toUpperCase()}
