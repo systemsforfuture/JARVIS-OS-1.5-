@@ -9,7 +9,7 @@ export function setToken(t: string) { authToken = t; localStorage.setItem('jarvi
 export function clearToken() { authToken = null; localStorage.removeItem('jarvis_token'); }
 export function isAuthenticated() { return !!authToken; }
 
-export async function api<T = any>(path: string, options: RequestInit & { body?: any } = {}): Promise<T> {
+export async function api<T = any>(path: string, options: { method?: string; headers?: Record<string, string>; body?: any } = {}): Promise<T> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
