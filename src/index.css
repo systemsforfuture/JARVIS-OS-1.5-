@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,58 +6,60 @@
 
 @layer base {
   :root {
-    --background: 220 20% 14%;
-    --foreground: 190 100% 80%;
+    --background: 230 14% 4%;
+    --foreground: 0 0% 95%;
 
-    --card: 220 25% 9%;
-    --card-foreground: 190 100% 80%;
+    --card: 240 10% 7%;
+    --card-foreground: 0 0% 95%;
 
-    --popover: 220 25% 9%;
-    --popover-foreground: 190 100% 80%;
+    --popover: 240 10% 7%;
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 190 100% 50%;
-    --primary-foreground: 220 25% 6%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 30% 14%;
-    --secondary-foreground: 190 80% 70%;
+    --secondary: 240 6% 10%;
+    --secondary-foreground: 240 5% 65%;
 
-    --muted: 220 20% 12%;
-    --muted-foreground: 200 30% 45%;
+    --muted: 240 6% 10%;
+    --muted-foreground: 240 5% 48%;
 
-    --accent: 190 100% 40%;
-    --accent-foreground: 220 25% 6%;
+    --accent: 217 91% 60%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 190 60% 20%;
-    --input: 220 30% 14%;
-    --ring: 190 100% 50%;
+    --border: 240 6% 15%;
+    --input: 240 6% 15%;
+    --ring: 217 91% 60%;
 
-    --radius: 0.25rem;
+    --radius: 0.75rem;
 
     /* JARVIS custom tokens */
-    --jarvis-glow: 190 100% 50%;
-    --jarvis-glow-dim: 190 80% 30%;
-    --jarvis-amber: 40 100% 50%;
-    --jarvis-amber-dim: 40 80% 30%;
-    --jarvis-success: 160 100% 40%;
-    --jarvis-grid: 190 60% 12%;
-    --jarvis-panel: 220 30% 8%;
-    --jarvis-panel-border: 190 60% 18%;
+    --jarvis-success: 142 71% 45%;
+    --jarvis-warning: 38 92% 50%;
+    --jarvis-error: 0 84% 60%;
+    --jarvis-purple: 258 90% 66%;
+    --jarvis-cyan: 187 86% 43%;
 
-    --font-display: 'Orbitron', sans-serif;
-    --font-body: 'Rajdhani', sans-serif;
-    --font-mono: 'Share Tech Mono', monospace;
+    --jarvis-surface: 240 10% 7%;
+    --jarvis-elevated: 240 8% 10%;
+    --jarvis-hover: 240 7% 13%;
+    --jarvis-border-light: 240 5% 26%;
 
-    --sidebar-background: 220 25% 6%;
-    --sidebar-foreground: 190 100% 80%;
-    --sidebar-primary: 190 100% 50%;
-    --sidebar-primary-foreground: 220 25% 6%;
-    --sidebar-accent: 220 30% 14%;
-    --sidebar-accent-foreground: 190 80% 70%;
-    --sidebar-border: 190 60% 20%;
-    --sidebar-ring: 190 100% 50%;
+    --font-display: 'Cormorant Garamond', serif;
+    --font-body: 'Inter', -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    --sidebar-background: 240 10% 7%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 8% 10%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 240 6% 15%;
+    --sidebar-ring: 217 91% 60%;
   }
 }
 
@@ -80,45 +82,18 @@
   }
 }
 
-/* JARVIS animations */
-@keyframes pulse-glow {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 1; }
-}
-
-@keyframes scan-line {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(100vh); }
-}
-
-@keyframes flicker {
+/* Animations */
+@keyframes pulse-dot {
   0%, 100% { opacity: 1; }
-  92% { opacity: 1; }
-  93% { opacity: 0.3; }
-  94% { opacity: 1; }
-  96% { opacity: 0.7; }
-  97% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
-@keyframes grid-pulse {
-  0%, 100% { opacity: 0.03; }
-  50% { opacity: 0.08; }
+.animate-pulse-dot {
+  animation: pulse-dot 2s infinite;
 }
 
-.jarvis-grid-bg {
-  background-image: 
-    linear-gradient(hsl(var(--jarvis-grid)) 1px, transparent 1px),
-    linear-gradient(90deg, hsl(var(--jarvis-grid)) 1px, transparent 1px);
-  background-size: 40px 40px;
-  animation: grid-pulse 4s ease-in-out infinite;
-}
-
-.jarvis-glow-text {
-  text-shadow: 0 0 10px hsl(var(--jarvis-glow) / 0.6), 0 0 30px hsl(var(--jarvis-glow) / 0.3);
-}
-
-.jarvis-panel-glow {
-  box-shadow: 
-    0 0 15px hsl(var(--jarvis-glow) / 0.1),
-    inset 0 0 15px hsl(var(--jarvis-glow) / 0.05);
-}
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: hsl(var(--jarvis-border-light)); }

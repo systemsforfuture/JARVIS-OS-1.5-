@@ -14,9 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ["Orbitron", "sans-serif"],
-        body: ["Rajdhani", "sans-serif"],
-        mono: ["Share Tech Mono", "monospace"],
+        display: ["Cormorant Garamond", "serif"],
+        body: ["Inter", "-apple-system", "sans-serif"],
+        mono: ["JetBrains Mono", "monospace"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -53,13 +53,14 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         jarvis: {
-          glow: "hsl(var(--jarvis-glow))",
-          "glow-dim": "hsl(var(--jarvis-glow-dim))",
-          amber: "hsl(var(--jarvis-amber))",
-          "amber-dim": "hsl(var(--jarvis-amber-dim))",
           success: "hsl(var(--jarvis-success))",
-          panel: "hsl(var(--jarvis-panel))",
-          "panel-border": "hsl(var(--jarvis-panel-border))",
+          warning: "hsl(var(--jarvis-warning))",
+          error: "hsl(var(--jarvis-error))",
+          purple: "hsl(var(--jarvis-purple))",
+          cyan: "hsl(var(--jarvis-cyan))",
+          surface: "hsl(var(--jarvis-surface))",
+          elevated: "hsl(var(--jarvis-elevated))",
+          hover: "hsl(var(--jarvis-hover))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
