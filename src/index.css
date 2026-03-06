@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,60 +6,64 @@
 
 @layer base {
   :root {
-    --background: 230 14% 4%;
-    --foreground: 0 0% 95%;
+    --background: 220 20% 4%;
+    --foreground: 200 20% 90%;
 
-    --card: 240 10% 7%;
-    --card-foreground: 0 0% 95%;
+    --card: 220 18% 7%;
+    --card-foreground: 200 20% 90%;
 
-    --popover: 240 10% 7%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 220 18% 7%;
+    --popover-foreground: 200 20% 90%;
 
-    --primary: 217 91% 60%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 199 89% 48%;
+    --primary-foreground: 220 20% 4%;
 
-    --secondary: 240 6% 10%;
-    --secondary-foreground: 240 5% 65%;
+    --secondary: 220 14% 11%;
+    --secondary-foreground: 200 10% 55%;
 
-    --muted: 240 6% 10%;
-    --muted-foreground: 240 5% 48%;
+    --muted: 220 14% 11%;
+    --muted-foreground: 200 10% 45%;
 
-    --accent: 217 91% 60%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 199 89% 48%;
+    --accent-foreground: 220 20% 4%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 240 6% 15%;
-    --input: 240 6% 15%;
-    --ring: 217 91% 60%;
+    --border: 200 15% 14%;
+    --input: 200 15% 14%;
+    --ring: 199 89% 48%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
-    /* JARVIS custom tokens */
-    --jarvis-success: 142 71% 45%;
-    --jarvis-warning: 38 92% 50%;
-    --jarvis-error: 0 84% 60%;
-    --jarvis-purple: 258 90% 66%;
-    --jarvis-cyan: 187 86% 43%;
+    /* JARVIS HUD tokens */
+    --jarvis-glow: 199 89% 48%;
+    --jarvis-glow-bright: 190 100% 60%;
+    --jarvis-success: 160 84% 39%;
+    --jarvis-warning: 45 93% 47%;
+    --jarvis-error: 0 72% 51%;
+    --jarvis-purple: 270 76% 58%;
+    --jarvis-cyan: 187 100% 42%;
+    --jarvis-gold: 38 92% 50%;
 
-    --jarvis-surface: 240 10% 7%;
-    --jarvis-elevated: 240 8% 10%;
-    --jarvis-hover: 240 7% 13%;
-    --jarvis-border-light: 240 5% 26%;
+    --jarvis-surface: 220 18% 7%;
+    --jarvis-elevated: 220 16% 10%;
+    --jarvis-hover: 220 16% 13%;
+    --jarvis-border-glow: 199 89% 48%;
+    --jarvis-border-light: 200 10% 22%;
 
-    --font-display: 'Cormorant Garamond', serif;
-    --font-body: 'Inter', -apple-system, sans-serif;
+    --font-display: 'Orbitron', sans-serif;
+    --font-body: 'Rajdhani', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
 
-    --sidebar-background: 240 10% 7%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 217 91% 60%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 8% 10%;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 240 6% 15%;
-    --sidebar-ring: 217 91% 60%;
+    --sidebar-background: 220 20% 5%;
+    --sidebar-foreground: 200 20% 90%;
+    --sidebar-primary: 199 89% 48%;
+    --sidebar-primary-foreground: 220 20% 4%;
+    --sidebar-accent: 220 16% 10%;
+    --sidebar-accent-foreground: 200 20% 90%;
+    --sidebar-border: 200 15% 14%;
+    --sidebar-ring: 199 89% 48%;
   }
 }
 
@@ -71,10 +75,14 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-body);
+    font-weight: 500;
+    letter-spacing: 0.02em;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
 
   code, pre {
@@ -82,18 +90,100 @@
   }
 }
 
-/* Animations */
+/* ── HUD Glow Effects ─────────────────────────────── */
+.hud-glow {
+  box-shadow: 
+    0 0 15px -3px hsl(var(--jarvis-glow) / 0.15),
+    inset 0 1px 0 0 hsl(var(--jarvis-glow) / 0.06);
+  border-color: hsl(var(--jarvis-glow) / 0.25);
+}
+
+.hud-glow-strong {
+  box-shadow: 
+    0 0 20px -3px hsl(var(--jarvis-glow) / 0.3),
+    0 0 60px -10px hsl(var(--jarvis-glow) / 0.1),
+    inset 0 1px 0 0 hsl(var(--jarvis-glow) / 0.1);
+  border-color: hsl(var(--jarvis-glow) / 0.4);
+}
+
+.hud-border {
+  border: 1px solid hsl(var(--jarvis-glow) / 0.15);
+  position: relative;
+}
+
+.hud-border::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 20%;
+  right: 20%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, hsl(var(--jarvis-glow) / 0.5), transparent);
+}
+
+.hud-card {
+  background: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(220 18% 8%) 100%);
+  border: 1px solid hsl(var(--jarvis-glow) / 0.12);
+  position: relative;
+  overflow: hidden;
+}
+
+.hud-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, hsl(var(--jarvis-glow) / 0.3), transparent);
+}
+
+/* ── Animations ───────────────────────────────────── */
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes hud-scan {
+  0% { transform: translateY(-100%); opacity: 0; }
+  50% { opacity: 0.03; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 10px -3px hsl(var(--jarvis-glow) / 0.2); }
+  50% { box-shadow: 0 0 20px -3px hsl(var(--jarvis-glow) / 0.4); }
 }
 
 .animate-pulse-dot {
   animation: pulse-dot 2s infinite;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
+.animate-glow-pulse {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+/* Scanline overlay for cards */
+.hud-scanline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, transparent 0%, hsl(var(--jarvis-glow) / 0.02) 50%, transparent 100%);
+  animation: hud-scan 4s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Scrollbar ────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: hsl(var(--jarvis-border-light)); }
+::-webkit-scrollbar-thumb { 
+  background: hsl(var(--jarvis-glow) / 0.2); 
+  border-radius: 2px; 
+}
+::-webkit-scrollbar-thumb:hover { 
+  background: hsl(var(--jarvis-glow) / 0.4); 
+}

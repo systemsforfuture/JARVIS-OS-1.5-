@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ["Cormorant Garamond", "serif"],
-        body: ["Inter", "-apple-system", "sans-serif"],
+        display: ["Orbitron", "sans-serif"],
+        body: ["Rajdhani", "sans-serif"],
         mono: ["JetBrains Mono", "monospace"],
       },
       colors: {
@@ -53,11 +53,14 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         jarvis: {
+          glow: "hsl(var(--jarvis-glow))",
+          "glow-bright": "hsl(var(--jarvis-glow-bright))",
           success: "hsl(var(--jarvis-success))",
           warning: "hsl(var(--jarvis-warning))",
           error: "hsl(var(--jarvis-error))",
           purple: "hsl(var(--jarvis-purple))",
           cyan: "hsl(var(--jarvis-cyan))",
+          gold: "hsl(var(--jarvis-gold))",
           surface: "hsl(var(--jarvis-surface))",
           elevated: "hsl(var(--jarvis-elevated))",
           hover: "hsl(var(--jarvis-hover))",
