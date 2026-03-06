@@ -1,9 +1,11 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Outlet } from "react-router-dom";
-import { Activity } from "lucide-react";
+import { Activity, Building2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function DashboardLayout() {
+  const navigate = useNavigate();
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
@@ -25,6 +27,13 @@ export default function DashboardLayout() {
               </span>
             </div>
             <div className="flex items-center gap-3">
+              <button
+                onClick={() => navigate('/office')}
+                className="flex items-center gap-2 bg-primary/5 border border-primary/15 px-3 py-1.5 rounded-lg hover:bg-primary/10 hover:border-primary/30 transition-all group"
+              >
+                <Building2 className="w-3.5 h-3.5 text-primary/70 group-hover:text-primary transition-colors" />
+                <span className="text-[10px] font-display tracking-[0.15em] text-primary/70 group-hover:text-primary transition-colors">VIRTUAL OFFICE</span>
+              </button>
               <div className="flex items-center gap-2 bg-jarvis-success/5 border border-jarvis-success/20 px-3 py-1 rounded">
                 <div className="w-1.5 h-1.5 rounded-full bg-jarvis-success animate-pulse-dot" />
                 <span className="text-[11px] font-mono text-jarvis-success tracking-wider">ONLINE</span>
