@@ -1,0 +1,164 @@
+{
+  "name": "JARVIS Development Tools",
+  "description": "Code, DevOps, GitHub — Agent: ARCHI",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "code_generate",
+        "description": "Generiere Code in einer Programmiersprache. Standard-Route: Ollama Qwen Coder (kostenlos).",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "language": {
+              "type": "string",
+              "enum": ["python", "javascript", "typescript", "html", "css", "sql", "bash", "go", "rust"],
+              "description": "Programmiersprache"
+            },
+            "task": {
+              "type": "string",
+              "description": "Was soll der Code tun?"
+            },
+            "context": {
+              "type": "string",
+              "description": "Optional: Bestehender Code oder Kontext"
+            },
+            "style": {
+              "type": "string",
+              "enum": ["clean", "minimal", "documented", "production"],
+              "default": "clean"
+            }
+          },
+          "required": ["language", "task"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "code_review",
+        "description": "Reviewe Code auf Bugs, Security-Issues, Performance. Route: Claude Sonnet (Qualität).",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string",
+              "description": "Der Code der reviewed werden soll"
+            },
+            "language": {
+              "type": "string"
+            },
+            "focus": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["bugs", "security", "performance", "readability", "best_practices"]
+              },
+              "description": "Worauf fokussieren?"
+            }
+          },
+          "required": ["code"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "bug_analyze",
+        "description": "Analysiere einen Bug und schlage Lösung vor. Route: Ollama für einfache Bugs, Claude für komplexe.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "error_message": {
+              "type": "string",
+              "description": "Die Fehlermeldung"
+            },
+            "stack_trace": {
+              "type": "string",
+              "description": "Optional: Stack Trace"
+            },
+            "context": {
+              "type": "string",
+              "description": "Optional: Relevanter Code oder Kontext"
+            },
+            "repo": {
+              "type": "string",
+              "description": "Optional: GitHub Repo URL"
+            }
+          },
+          "required": ["error_message"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "github_issue",
+        "description": "Erstelle oder manage GitHub Issues.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": ["create", "list", "close", "comment", "assign"],
+              "description": "Was soll gemacht werden?"
+            },
+            "repo": {
+              "type": "string",
+              "description": "Repository im Format owner/repo"
+            },
+            "title": {
+              "type": "string",
+              "description": "Issue-Titel (bei create)"
+            },
+            "body": {
+              "type": "string",
+              "description": "Issue-Body (bei create/comment)"
+            },
+            "labels": {
+              "type": "array",
+              "items": {"type": "string"},
+              "description": "Labels"
+            },
+            "issue_number": {
+              "type": "integer",
+              "description": "Issue-Nummer (bei close/comment/assign)"
+            }
+          },
+          "required": ["action", "repo"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "docker_manage",
+        "description": "Manage Docker Container.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": ["status", "start", "stop", "restart", "logs", "exec"],
+              "description": "Was soll gemacht werden?"
+            },
+            "container": {
+              "type": "string",
+              "description": "Container-Name oder ID"
+            },
+            "command": {
+              "type": "string",
+              "description": "Bei exec: Welcher Befehl?"
+            },
+            "tail": {
+              "type": "integer",
+              "default": 50,
+              "description": "Bei logs: Letzte N Zeilen"
+            }
+          },
+          "required": ["action"]
+        }
+      }
+    }
+  ]
+}

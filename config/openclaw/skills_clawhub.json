@@ -1,0 +1,197 @@
+{
+  "_comment": "JARVIS 1.5 — ClawHub Skills Registry. Maps ClawHub skills to agent teams.",
+  "version": "1.5.0",
+
+  "skills": {
+    "brain": {
+      "description": "Core memory and knowledge tools",
+      "agents": ["jarvis", "elon", "steve", "donald", "archi", "donna", "iris", "satoshi", "felix", "andreas"],
+      "tools": [
+        "memory_store", "memory_recall", "memory_search",
+        "knowledge_store", "knowledge_query"
+      ]
+    },
+    "task_management": {
+      "description": "Task delegation and tracking",
+      "agents": ["jarvis", "elon"],
+      "tools": [
+        "task_create", "task_delegate", "task_status", "task_complete"
+      ]
+    },
+    "web_research": {
+      "description": "Internet research and data gathering",
+      "agents": ["jarvis", "elon", "steve", "donald", "archi", "satoshi", "felix", "andreas"],
+      "tools": [
+        "web_search", "web_scrape", "web_screenshot"
+      ]
+    },
+    "social_media": {
+      "description": "Social media management (requires Postiz or direct API)",
+      "agents": ["steve", "iris"],
+      "requires_service": "postiz",
+      "tools": [
+        "social_media_post", "social_media_schedule",
+        "social_media_analytics", "social_media_reply",
+        "social_media_dm"
+      ],
+      "platforms": ["instagram", "linkedin", "twitter", "facebook", "tiktok", "youtube"]
+    },
+    "email": {
+      "description": "Email management",
+      "agents": ["donna", "donald", "felix"],
+      "tools": [
+        "email_read", "email_send", "email_reply", "email_categorize",
+        "email_template"
+      ]
+    },
+    "calendar": {
+      "description": "Calendar and scheduling",
+      "agents": ["donna", "jarvis"],
+      "tools": [
+        "calendar_check", "calendar_create", "calendar_update",
+        "calendar_remind"
+      ]
+    },
+    "crm": {
+      "description": "CRM management (HubSpot, Airtable, etc.)",
+      "agents": ["donald", "felix", "andreas"],
+      "requires_service": "hubspot",
+      "tools": [
+        "crm_contact_create", "crm_contact_update", "crm_deal_create",
+        "crm_deal_update", "crm_pipeline_status", "crm_search"
+      ]
+    },
+    "sales": {
+      "description": "Sales automation tools",
+      "agents": ["donald", "andreas"],
+      "tools": [
+        "lead_score", "cold_email_generate", "pipeline_status",
+        "proposal_create", "linkedin_lookup", "meeting_schedule"
+      ]
+    },
+    "content": {
+      "description": "Content creation and SEO",
+      "agents": ["steve", "iris"],
+      "tools": [
+        "content_generate", "content_rewrite", "seo_analyze",
+        "seo_keywords", "newsletter_create", "newsletter_send",
+        "blog_publish"
+      ]
+    },
+    "design": {
+      "description": "Visual design and brand",
+      "agents": ["iris"],
+      "tools": [
+        "image_generate", "image_edit", "design_template",
+        "brand_check", "svg_create", "screenshot_capture",
+        "color_analyze"
+      ]
+    },
+    "development": {
+      "description": "Code and infrastructure",
+      "agents": ["archi"],
+      "tools": [
+        "code_execute", "code_review", "deploy_trigger",
+        "monitoring_check", "db_query", "git_operations",
+        "security_scan", "log_analyze", "server_status"
+      ]
+    },
+    "documents": {
+      "description": "Document creation and management",
+      "agents": ["donna", "donald", "andreas"],
+      "tools": [
+        "document_create", "document_edit", "spreadsheet_update",
+        "pdf_generate", "invoice_create", "contract_template"
+      ]
+    },
+    "analytics": {
+      "description": "Data analytics and KPIs",
+      "agents": ["elon", "jarvis", "andreas"],
+      "tools": [
+        "kpi_get", "kpi_track", "analytics_dashboard",
+        "report_generate", "benchmark_research", "pipeline_analyze"
+      ]
+    },
+    "customer_success": {
+      "description": "Customer support and retention",
+      "agents": ["felix", "andreas"],
+      "tools": [
+        "customer_health", "ticket_create", "ticket_respond",
+        "survey_send", "onboarding_check", "churn_alert"
+      ]
+    },
+    "crypto": {
+      "description": "Cryptocurrency and trading",
+      "agents": ["satoshi"],
+      "tools": [
+        "crypto_price", "crypto_analysis", "portfolio_track",
+        "alert_create", "trade_execute"
+      ]
+    },
+    "communication": {
+      "description": "Team and external communication",
+      "agents": ["jarvis", "donna", "felix", "steve"],
+      "tools": [
+        "telegram_send", "notification_send", "alert_create",
+        "webhook_trigger"
+      ]
+    },
+    "compliance": {
+      "description": "Legal and compliance",
+      "agents": ["donna"],
+      "tools": [
+        "compliance_check", "gdpr_check", "contract_review"
+      ]
+    },
+    "automation": {
+      "description": "N8N workflow automation",
+      "agents": ["jarvis", "archi", "donna"],
+      "requires_service": "n8n",
+      "tools": [
+        "workflow_trigger", "workflow_status", "webhook_create"
+      ]
+    }
+  },
+
+  "required_services": {
+    "postiz": {
+      "name": "Postiz",
+      "description": "Social Media Management — post, schedule, analytics",
+      "docker_image": "ghcr.io/gitroomhq/postiz-app",
+      "default_port": 4200,
+      "check_endpoint": "/api/health",
+      "install_url": "https://postiz.com",
+      "required_for": ["social_media"]
+    },
+    "n8n": {
+      "name": "N8N",
+      "description": "Workflow Automation — triggers, webhooks, integrations",
+      "docker_image": "n8nio/n8n",
+      "default_port": 5678,
+      "check_endpoint": "/healthz",
+      "required_for": ["automation"]
+    },
+    "openclaw": {
+      "name": "OpenClaw",
+      "description": "AI Agent Platform — agent orchestration",
+      "docker_image": "openclaw/openclaw",
+      "default_port": 8080,
+      "check_endpoint": "/api/health",
+      "required_for": ["core"]
+    },
+    "hubspot": {
+      "name": "HubSpot CRM",
+      "description": "CRM — contacts, deals, pipeline",
+      "type": "api",
+      "env_key": "HUBSPOT_API_KEY",
+      "required_for": ["crm"]
+    },
+    "airtable": {
+      "name": "Airtable",
+      "description": "Database — structured data, tables",
+      "type": "api",
+      "env_key": "AIRTABLE_API_KEY",
+      "required_for": ["crm"]
+    }
+  }
+}

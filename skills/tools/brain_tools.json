@@ -1,0 +1,95 @@
+{
+  "name": "JARVIS Brain Tools",
+  "description": "Memory und Wissens-Tools — PFLICHT: Immer zuerst Brain checken bevor du antwortest",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "memory_store",
+        "description": "Speichere eine Information dauerhaft im Brain. PFLICHT: Nach jeder wichtigen Erkenntnis, Entscheidung, oder neuem Fakt aufrufen. Nichts darf verloren gehen.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "memory_type": {
+              "type": "string",
+              "enum": ["fact", "learning", "preference", "context", "decision", "error", "pattern", "relation"],
+              "description": "fact=harter Fakt, learning=was gelernt, preference=DOM-Vorliebe, context=Gesprächs-Kontext, decision=Entscheidung, error=Fehler+Vermeidung, pattern=Muster, relation=Beziehung"
+            },
+            "key": {
+              "type": "string",
+              "description": "Eindeutiger Schlüssel, z.B. 'firma_name', 'kunde_mueller_email', 'fehler_timeout_api'"
+            },
+            "value": {
+              "type": "string",
+              "description": "Die zu speichernde Information. Bei Fehlern: Was passiert ist + wie es vermieden wird."
+            },
+            "priority": {
+              "type": "string",
+              "enum": ["critical", "high", "normal", "low", "ephemeral"],
+              "description": "critical=nie vergessen, high=1 Jahr, normal=30 Tage, low=7 Tage, ephemeral=24h"
+            },
+            "tags": {
+              "type": "array",
+              "items": {"type": "string"},
+              "description": "Tags für spätere Suche, z.B. ['kunde', 'mueller', 'vertrag']"
+            }
+          },
+          "required": ["memory_type", "key", "value"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "memory_recall",
+        "description": "PFLICHT VOR JEDER ANTWORT: Rufe gespeichertes Wissen ab. Prüfe ob das Brain die Antwort schon kennt bevor du neu generierst oder recherchierst.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Suchbegriffe, z.B. 'sales pipeline aktuell' oder 'kunde mueller'"
+            },
+            "memory_type": {
+              "type": "string",
+              "enum": ["fact", "learning", "preference", "context", "decision", "error", "pattern", "relation"],
+              "description": "Optional: Nur einen bestimmten Typ suchen"
+            },
+            "tags": {
+              "type": "array",
+              "items": {"type": "string"},
+              "description": "Optional: Nach Tags filtern"
+            },
+            "limit": {
+              "type": "integer",
+              "description": "Max Ergebnisse (Standard: 10)",
+              "default": 10
+            }
+          },
+          "required": ["query"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "memory_search",
+        "description": "Volltextsuche im gesamten Brain. Nutze dies wenn memory_recall nicht genug findet.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Suchtext — wird als Volltext-Suche ausgeführt"
+            },
+            "limit": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          "required": ["query"]
+        }
+      }
+    }
+  ]
+}

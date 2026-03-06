@@ -1,0 +1,55 @@
+{
+  "category": "global",
+  "description": "Skills die allen Agents zur Verfugung stehen",
+  "skills": [
+    {
+      "slug": "web-search",
+      "name": "Web-Suche",
+      "description": "Internet-Recherche in Echtzeit",
+      "requires_key": null,
+      "agents": ["all"]
+    },
+    {
+      "slug": "memory-store",
+      "name": "Memory speichern",
+      "description": "Fakten und Kontext dauerhaft in der Datenbank speichern",
+      "requires_key": null,
+      "agents": ["all"]
+    },
+    {
+      "slug": "memory-recall",
+      "name": "Memory abrufen",
+      "description": "Gespeicherte Fakten und Kontext aus der Datenbank abrufen",
+      "requires_key": null,
+      "agents": ["all"]
+    },
+    {
+      "slug": "task-create",
+      "name": "Task erstellen",
+      "description": "Neue Aufgabe fur einen Agent erstellen",
+      "requires_key": null,
+      "agents": ["all"]
+    },
+    {
+      "slug": "task-delegate",
+      "name": "Task delegieren",
+      "description": "Aufgabe an einen anderen Agent weitergeben",
+      "requires_key": null,
+      "agents": ["jarvis", "elon"]
+    },
+    {
+      "slug": "telegram-send",
+      "name": "Telegram senden",
+      "description": "Nachricht via Telegram Bot senden",
+      "requires_key": "TELEGRAM_BOT_TOKEN",
+      "agents": ["jarvis", "elon"]
+    },
+    {
+      "slug": "email-send",
+      "name": "E-Mail senden",
+      "description": "E-Mail versenden",
+      "requires_key": null,
+      "agents": ["donna", "steve", "donald", "felix"]
+    }
+  ]
+}

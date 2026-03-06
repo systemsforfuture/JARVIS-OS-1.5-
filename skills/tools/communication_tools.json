@@ -1,0 +1,91 @@
+{
+  "name": "JARVIS Communication Tools",
+  "description": "Nachrichten, E-Mails und Benachrichtigungen",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "telegram_send",
+        "description": "Sende eine Nachricht via Telegram an DOM. Nutze für wichtige Updates, Reports, Alerts.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string",
+              "description": "Die Nachricht (Markdown erlaubt)"
+            },
+            "priority": {
+              "type": "string",
+              "enum": ["normal", "urgent", "alert"],
+              "description": "normal=Standard, urgent=wichtig, alert=sofort"
+            },
+            "parse_mode": {
+              "type": "string",
+              "enum": ["Markdown", "HTML"],
+              "default": "Markdown"
+            }
+          },
+          "required": ["message"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "email_send",
+        "description": "Sende eine E-Mail. Agents: donna, steve, donald, felix.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "to": {
+              "type": "string",
+              "description": "Empfänger E-Mail-Adresse"
+            },
+            "subject": {
+              "type": "string",
+              "description": "Betreff"
+            },
+            "body": {
+              "type": "string",
+              "description": "E-Mail-Text (Markdown)"
+            },
+            "cc": {
+              "type": "string",
+              "description": "Optional: CC-Empfänger"
+            },
+            "template": {
+              "type": "string",
+              "description": "Optional: Template-Name z.B. 'cold_email', 'follow_up', 'newsletter'"
+            }
+          },
+          "required": ["to", "subject", "body"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "email_read",
+        "description": "Lese und triagiere E-Mails. Agent: donna.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "folder": {
+              "type": "string",
+              "enum": ["inbox", "sent", "important", "spam"],
+              "default": "inbox"
+            },
+            "unread_only": {
+              "type": "boolean",
+              "default": true
+            },
+            "limit": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        }
+      }
+    }
+  ]
+}

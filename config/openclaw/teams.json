@@ -1,0 +1,70 @@
+{
+  "version": "1.5.0",
+  "teams": {
+    "command": {
+      "name": "Command",
+      "description": "Strategische Steuerung und Orchestrierung",
+      "lead": "jarvis",
+      "members": ["jarvis"],
+      "model": "tier1-opus"
+    },
+    "intelligence": {
+      "name": "Intelligence",
+      "description": "Datenanalyse, KPIs und Systemoptimierung",
+      "lead": "elon",
+      "members": ["elon"],
+      "model": "tier1-opus"
+    },
+    "marketing": {
+      "name": "Marketing & Creative",
+      "description": "Content, Social Media, Design und Brand",
+      "lead": "steve",
+      "members": ["steve", "iris"],
+      "model": "tier2-sonnet"
+    },
+    "sales": {
+      "name": "Sales & Revenue",
+      "description": "Lead-Gen, Pipeline, Deals und Revenue",
+      "lead": "donald",
+      "members": ["donald"],
+      "model": "tier2-sonnet"
+    },
+    "development": {
+      "name": "Development & Infrastructure",
+      "description": "Code, DevOps, Security und Infrastruktur",
+      "lead": "archi",
+      "members": ["archi"],
+      "model": "tier2-sonnet"
+    },
+    "operations": {
+      "name": "Operations & Backoffice",
+      "description": "Prozesse, Compliance, Dokumente und Koordination",
+      "lead": "donna",
+      "members": ["donna"],
+      "model": "tier2-sonnet"
+    },
+    "crypto": {
+      "name": "Crypto & Trading",
+      "description": "Portfolio, Markt-Analyse und DeFi",
+      "lead": "satoshi",
+      "members": ["satoshi"],
+      "model": "tier2-sonnet",
+      "status": "standby"
+    },
+    "customer-success": {
+      "name": "Customer Success",
+      "description": "Onboarding, Support, Retention und SFE",
+      "lead": "felix",
+      "members": ["felix", "andreas"],
+      "model": "tier2-sonnet"
+    }
+  },
+  "hierarchy": {
+    "dom": {
+      "direct_reports": ["jarvis"]
+    },
+    "jarvis": {
+      "direct_reports": ["elon", "steve", "donald", "archi", "donna", "iris", "satoshi", "felix", "andreas"]
+    }
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "name": "JARVIS Operations Tools",
+  "description": "Backoffice, Kalender, Dokumente — Agent: DONNA",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "calendar_manage",
+        "description": "Termine anzeigen, erstellen oder ändern.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "enum": ["list", "create", "update", "delete"],
+              "description": "Was soll gemacht werden?"
+            },
+            "date": {
+              "type": "string",
+              "description": "Datum im Format YYYY-MM-DD"
+            },
+            "title": {
+              "type": "string",
+              "description": "Termin-Titel (bei create)"
+            },
+            "time": {
+              "type": "string",
+              "description": "Uhrzeit HH:MM (bei create)"
+            },
+            "duration_minutes": {
+              "type": "integer",
+              "default": 60,
+              "description": "Dauer in Minuten"
+            },
+            "attendees": {
+              "type": "array",
+              "items": {"type": "string"},
+              "description": "Teilnehmer (E-Mail-Adressen)"
+            },
+            "event_id": {
+              "type": "string",
+              "description": "Event-ID (bei update/delete)"
+            }
+          },
+          "required": ["action"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "document_create",
+        "description": "Erstelle ein Dokument (Rechnung, SOP, Vertrag, Template).",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "doc_type": {
+              "type": "string",
+              "enum": ["invoice", "sop", "contract", "template", "meeting_notes", "proposal", "report"],
+              "description": "Dokumenttyp"
+            },
+            "title": {
+              "type": "string",
+              "description": "Titel des Dokuments"
+            },
+            "content": {
+              "type": "string",
+              "description": "Inhalt oder Beschreibung was generiert werden soll"
+            },
+            "format": {
+              "type": "string",
+              "enum": ["markdown", "pdf", "html"],
+              "default": "markdown"
+            },
+            "variables": {
+              "type": "object",
+              "description": "Template-Variablen als Key-Value, z.B. {\"kunde\": \"Firma XY\", \"betrag\": \"5000\"}"
+            }
+          },
+          "required": ["doc_type", "title"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "compliance_check",
+        "description": "DSGVO und Compliance-Check für einen Text, Prozess oder Datensatz.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "check_type": {
+              "type": "string",
+              "enum": ["dsgvo_text", "dsgvo_process", "data_handling", "email_compliance"],
+              "description": "Art des Checks"
+            },
+            "content": {
+              "type": "string",
+              "description": "Der zu prüfende Inhalt"
+            }
+          },
+          "required": ["check_type", "content"]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "category": "marketing",
+  "description": "Marketing, Content und Social Media Skills",
+  "skills": [
+    {
+      "slug": "content-creation",
+      "name": "Content erstellen",
+      "description": "Texte, Posts, Artikel, Newsletter schreiben",
+      "requires_key": null,
+      "agents": ["steve", "iris"]
+    },
+    {
+      "slug": "social-media-post",
+      "name": "Social Media Post",
+      "description": "Automatisch auf Social Media posten",
+      "requires_key": "INSTAGRAM_TOKEN",
+      "agents": ["steve"]
+    },
+    {
+      "slug": "seo-analysis",
+      "name": "SEO-Analyse",
+      "description": "Keywords, Rankings und SEO-Optimierung",
+      "requires_key": null,
+      "agents": ["steve"]
+    },
+    {
+      "slug": "video-scripts",
+      "name": "Video-Skripte",
+      "description": "Skripte fur YouTube, Reels, TikTok schreiben",
+      "requires_key": null,
+      "agents": ["steve", "iris"]
+    },
+    {
+      "slug": "ad-copy",
+      "name": "Ad Copy",
+      "description": "Werbetexte fur Google Ads, Meta Ads erstellen",
+      "requires_key": null,
+      "agents": ["steve"]
+    },
+    {
+      "slug": "brand-voice-check",
+      "name": "Brand Voice Check",
+      "description": "Prufen ob Content der Markenidentitat entspricht",
+      "requires_key": null,
+      "agents": ["steve", "iris"]
+    },
+    {
+      "slug": "email-newsletter",
+      "name": "Newsletter",
+      "description": "Newsletter erstellen und versenden",
+      "requires_key": null,
+      "agents": ["steve"]
+    },
+    {
+      "slug": "linkedin-post",
+      "name": "LinkedIn Post",
+      "description": "LinkedIn-Beitrag erstellen und posten",
+      "requires_key": "LINKEDIN_TOKEN",
+      "agents": ["steve"]
+    },
+    {
+      "slug": "twitter-post",
+      "name": "X/Twitter Post",
+      "description": "Tweet oder Thread erstellen und posten",
+      "requires_key": "TWITTER_BEARER_TOKEN",
+      "agents": ["steve"]
+    }
+  ]
+}

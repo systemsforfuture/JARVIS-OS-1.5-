@@ -1,0 +1,90 @@
+{
+  "name": "JARVIS Analytics Tools",
+  "description": "Datenanalyse, KPIs und Reporting",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "kpi_get",
+        "description": "Hole aktuelle KPI-Werte aus der Datenbank. PFLICHT: Echte Zahlen nutzen, nie schätzen!",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "kpi_name": {
+              "type": "string",
+              "description": "Name des KPI, z.B. 'mrr', 'leads_total', 'avg_score', 'churn_rate'"
+            },
+            "period": {
+              "type": "string",
+              "enum": ["today", "week", "month", "quarter", "year"],
+              "default": "month"
+            },
+            "agent": {
+              "type": "string",
+              "description": "Optional: KPIs für einen bestimmten Agent"
+            }
+          },
+          "required": ["kpi_name"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "report_generate",
+        "description": "Generiere einen strukturierten Report. Nutzt echte Daten aus der Datenbank.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "report_type": {
+              "type": "string",
+              "enum": ["daily_summary", "weekly_report", "agent_performance", "sales_pipeline", "marketing_metrics", "system_health", "cost_analysis"],
+              "description": "Art des Reports"
+            },
+            "period": {
+              "type": "string",
+              "enum": ["today", "week", "month"],
+              "default": "week"
+            },
+            "format": {
+              "type": "string",
+              "enum": ["markdown", "json", "telegram"],
+              "default": "markdown"
+            }
+          },
+          "required": ["report_type"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "data_query",
+        "description": "Abfrage auf die JARVIS-Datenbank. Für komplexe Analysen die kein Standard-KPI abdeckt.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "table": {
+              "type": "string",
+              "enum": ["tasks", "task_outcomes", "error_log", "patterns", "memory", "agent_performance", "kpi_snapshots"],
+              "description": "Welche Tabelle abfragen?"
+            },
+            "filters": {
+              "type": "object",
+              "description": "Filter als Key-Value, z.B. {\"agent_slug\": \"steve\", \"status\": \"completed\"}"
+            },
+            "order_by": {
+              "type": "string",
+              "description": "Sortierung, z.B. 'created_at desc'"
+            },
+            "limit": {
+              "type": "integer",
+              "default": 50
+            }
+          },
+          "required": ["table"]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "name": "JARVIS Research Tools",
+  "description": "Recherche und Informationsbeschaffung — PFLICHT: Nutze diese Tools statt zu raten!",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "web_search",
+        "description": "PFLICHT bei Fakten-Fragen: Internet-Recherche in Echtzeit. NIEMALS Fakten erfinden — immer zuerst suchen!",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Suchbegriffe (deutsch oder englisch)"
+            },
+            "num_results": {
+              "type": "integer",
+              "default": 5,
+              "description": "Anzahl gewünschter Ergebnisse"
+            },
+            "language": {
+              "type": "string",
+              "default": "de",
+              "description": "Sprache der Ergebnisse"
+            }
+          },
+          "required": ["query"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "web_scrape",
+        "description": "Lade den Inhalt einer Webseite. Nutze dies um Informationen von einer konkreten URL zu lesen.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "description": "Die URL die geladen werden soll"
+            },
+            "extract": {
+              "type": "string",
+              "description": "Optional: Was genau extrahiert werden soll, z.B. 'preise', 'kontakt', 'haupttext'"
+            }
+          },
+          "required": ["url"]
+        }
+      }
+    }
+  ]
+}

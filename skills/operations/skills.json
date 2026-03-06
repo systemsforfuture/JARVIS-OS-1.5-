@@ -1,0 +1,55 @@
+{
+  "category": "operations",
+  "description": "Backoffice, Prozesse und Operations Skills",
+  "skills": [
+    {
+      "slug": "email-management",
+      "name": "E-Mail Management",
+      "description": "Postfach verwalten, triagieren, beantworten",
+      "requires_key": null,
+      "agents": ["donna"]
+    },
+    {
+      "slug": "calendar-manage",
+      "name": "Kalender",
+      "description": "Google Calendar Termine planen und koordinieren",
+      "requires_key": null,
+      "agents": ["donna"]
+    },
+    {
+      "slug": "document-creation",
+      "name": "Dokumente erstellen",
+      "description": "Dokumente, Templates, SOPs erstellen",
+      "requires_key": null,
+      "agents": ["donna"]
+    },
+    {
+      "slug": "invoice-create",
+      "name": "Rechnungen",
+      "description": "Rechnungen erstellen und versenden",
+      "requires_key": null,
+      "agents": ["donna"]
+    },
+    {
+      "slug": "process-docs",
+      "name": "Prozess-Docs",
+      "description": "SOPs und Prozesse dokumentieren und aktualisieren",
+      "requires_key": null,
+      "agents": ["donna", "andreas"]
+    },
+    {
+      "slug": "compliance-check",
+      "name": "Compliance Check",
+      "description": "DSGVO und regulatorische Compliance prufen",
+      "requires_key": null,
+      "agents": ["donna", "andreas"]
+    },
+    {
+      "slug": "meeting-notes",
+      "name": "Meeting Notes",
+      "description": "Meeting-Notizen erstellen und Action Items tracken",
+      "requires_key": null,
+      "agents": ["donna"]
+    }
+  ]
+}

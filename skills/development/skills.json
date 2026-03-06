@@ -1,0 +1,62 @@
+{
+  "category": "development",
+  "description": "Development, DevOps und Infrastructure Skills",
+  "skills": [
+    {
+      "slug": "code-generation",
+      "name": "Code generieren",
+      "description": "Code in jeder Sprache schreiben und generieren",
+      "requires_key": null,
+      "agents": ["archi"]
+    },
+    {
+      "slug": "code-review",
+      "name": "Code Review",
+      "description": "Code analysieren, Bugs finden, Verbesserungen vorschlagen",
+      "requires_key": null,
+      "agents": ["archi"]
+    },
+    {
+      "slug": "bug-analysis",
+      "name": "Bug-Analyse",
+      "description": "Fehler analysieren und Losungsvorschlage machen",
+      "requires_key": null,
+      "agents": ["archi"]
+    },
+    {
+      "slug": "github-issues",
+      "name": "GitHub Issues",
+      "description": "Issues erstellen, labeln, zuweisen und verwalten",
+      "requires_key": null,
+      "agents": ["archi"]
+    },
+    {
+      "slug": "github-prs",
+      "name": "GitHub PRs",
+      "description": "Pull Requests erstellen und reviewen",
+      "requires_key": null,
+      "agents": ["archi"]
+    },
+    {
+      "slug": "docker-manage",
+      "name": "Docker Management",
+      "description": "Container starten, stoppen, logs lesen, debuggen",
+      "requires_key": null,
+      "agents": ["archi"]
+    },
+    {
+      "slug": "deploy",
+      "name": "Deployment",
+      "description": "Code auf Staging/Production deployen",
+      "requires_key": null,
+      "agents": ["archi"]
+    },
+    {
+      "slug": "security-scan",
+      "name": "Security Scan",
+      "description": "Sicherheitsanalyse und Vulnerability-Check",
+      "requires_key": null,
+      "agents": ["archi"]
+    }
+  ]
+}

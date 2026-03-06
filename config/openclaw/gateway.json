@@ -1,0 +1,112 @@
+{
+  "version": "1.5.0",
+  "name": "JARVIS Gateway",
+  "description": "SYSTEMS™ JARVIS 1.5 — OpenClaw Configuration",
+  "litellm": {
+    "url": "http://jarvis-litellm:4000",
+    "key_env": "LITELLM_MASTER_KEY"
+  },
+  "database": {
+    "type": "supabase",
+    "url_env": "SUPABASE_URL",
+    "key_env": "SUPABASE_SERVICE_KEY",
+    "local_url_env": "DATABASE_URL"
+  },
+  "redis": {
+    "url_env": "REDIS_URL"
+  },
+  "defaults": {
+    "language": "de",
+    "max_concurrent_tasks": 10,
+    "task_timeout_seconds": 300
+  },
+  "prompts": {
+    "base_prompt": "prompts/agent_base.md",
+    "jarvis_prompt": "prompts/jarvis_system.md",
+    "agent_prompts_dir": "prompts/agents/",
+    "loader": "core/prompts/prompt_loader.py",
+    "anti_hallucination": true,
+    "brain_context_injection": true,
+    "tool_usage_enforced": true
+  },
+  "tools": {
+    "definitions_dir": "skills/tools/",
+    "tool_sets": {
+      "brain_tools": "skills/tools/brain_tools.json",
+      "task_tools": "skills/tools/task_tools.json",
+      "research_tools": "skills/tools/research_tools.json",
+      "communication_tools": "skills/tools/communication_tools.json",
+      "analytics_tools": "skills/tools/analytics_tools.json",
+      "marketing_tools": "skills/tools/marketing_tools.json",
+      "sales_tools": "skills/tools/sales_tools.json",
+      "dev_tools": "skills/tools/dev_tools.json",
+      "operations_tools": "skills/tools/operations_tools.json"
+    }
+  },
+  "routing": {
+    "strategy": "smart-4-tier",
+    "engine": "core/router/smart_router.py",
+    "tiers": [
+      {
+        "tier": 0,
+        "name": "Strategy",
+        "models": ["tier0-kimi", "tier0-kimi-thinking"],
+        "use_for": "deep reasoning, strategy, long-term planning"
+      },
+      {
+        "tier": 1,
+        "name": "Quality",
+        "models": ["tier1-opus", "tier1-sonnet", "tier1-haiku"],
+        "use_for": "content creation, sales, code review, quality tasks"
+      },
+      {
+        "tier": 2,
+        "name": "Routine (0 EUR)",
+        "models": ["tier2-qwen-coder", "tier2-llama", "tier2-qwen-general"],
+        "use_for": "bug fixes, testing, data collection, formatting, simple tasks"
+      },
+      {
+        "tier": 3,
+        "name": "Speed",
+        "models": ["tier3-groq-fast", "tier3-groq-small"],
+        "use_for": "classification, routing, quick checks"
+      }
+    ]
+  },
+  "memory": {
+    "enabled": true,
+    "backend": "supabase",
+    "engine": "core/brain/memory_engine.py",
+    "auto_context_injection": true,
+    "max_entries_per_agent": 5000,
+    "auto_cleanup": true,
+    "retention_days": 365
+  },
+  "learning": {
+    "enabled": true,
+    "backend": "supabase",
+    "engine": "core/learning/self_learning.py",
+    "data_collector": "core/learning/data_collector.py",
+    "auto_score": true,
+    "pattern_threshold": 3,
+    "weekly_report": true,
+    "model_optimization": true
+  },
+  "elon": {
+    "enabled": true,
+    "engine": "core/agents/elon_engine.py",
+    "quality_gate": true,
+    "quality_threshold": 0.6,
+    "error_analysis": true,
+    "agent_optimization": true,
+    "weekly_analysis": true,
+    "kpi_tracking": true
+  },
+  "notifications": {
+    "telegram": {
+      "enabled_env": "TELEGRAM_BOT_TOKEN",
+      "chat_id_env": "TELEGRAM_CHAT_ID",
+      "events": ["task_failed", "daily_report", "system_alert", "quality_gate_fail"]
+    }
+  }
+}

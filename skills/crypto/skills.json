@@ -1,0 +1,34 @@
+{
+  "category": "crypto",
+  "description": "Crypto, Trading und DeFi Skills",
+  "skills": [
+    {
+      "slug": "portfolio-tracking",
+      "name": "Portfolio Tracking",
+      "description": "Crypto-Portfolio Performance uberwachen",
+      "requires_key": null,
+      "agents": ["satoshi"]
+    },
+    {
+      "slug": "market-analysis",
+      "name": "Markt-Analyse",
+      "description": "Krypto-Markt analysieren, Trends erkennen",
+      "requires_key": null,
+      "agents": ["satoshi"]
+    },
+    {
+      "slug": "defi-strategy",
+      "name": "DeFi Strategy",
+      "description": "DeFi-Strategien entwickeln und bewerten",
+      "requires_key": null,
+      "agents": ["satoshi"]
+    },
+    {
+      "slug": "risk-management",
+      "name": "Risk Management",
+      "description": "Portfolio-Risiko bewerten, Stop-Loss setzen",
+      "requires_key": null,
+      "agents": ["satoshi"]
+    }
+  ]
+}

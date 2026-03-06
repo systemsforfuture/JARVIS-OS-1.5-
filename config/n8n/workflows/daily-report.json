@@ -1,0 +1,42 @@
+{
+  "name": "JARVIS Daily Report",
+  "description": "Taeglicher Report: Agent-Status, Tasks, KPIs an DOM via Telegram",
+  "trigger": {
+    "type": "cron",
+    "schedule": "0 18 * * *",
+    "timezone": "Europe/Berlin"
+  },
+  "steps": [
+    {
+      "name": "Collect Agent Stats",
+      "type": "http_request",
+      "config": {
+        "url": "http://jarvis-dashboard:3000/api/stats",
+        "method": "GET"
+      }
+    },
+    {
+      "name": "Collect Tasks",
+      "type": "http_request",
+      "config": {
+        "url": "http://jarvis-dashboard:3000/api/tasks?status=completed&limit=20",
+        "method": "GET"
+      }
+    },
+    {
+      "name": "Format Report",
+      "type": "function",
+      "config": {
+        "template": "JARVIS 1.5 — Tagesbericht\n━━━━━━━━━━━━━━━━━━━━\nAgents aktiv: {{stats.agents.active}}\nTasks heute: {{tasks.length}}\nTokens verbraucht: {{stats.tasks.total_tokens}}\n━━━━━━━━━━━━━━━━━━━━"
+      }
+    },
+    {
+      "name": "Send to Telegram",
+      "type": "telegram",
+      "config": {
+        "bot_token_env": "TELEGRAM_BOT_TOKEN",
+        "chat_id_env": "TELEGRAM_CHAT_ID"
+      }
+    }
+  ]
+}

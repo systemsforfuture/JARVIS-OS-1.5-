@@ -1,0 +1,98 @@
+{
+  "name": "JARVIS Marketing Tools",
+  "description": "Content-Erstellung, Social Media, SEO — Agent: STEVE",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "content_create",
+        "description": "Erstelle Content für eine bestimmte Plattform. Nutzt die SYSTEMS™ Brand Voice und plattform-spezifische Regeln.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "platform": {
+              "type": "string",
+              "enum": ["linkedin", "instagram", "twitter", "facebook", "newsletter", "blog", "youtube"],
+              "description": "Ziel-Plattform"
+            },
+            "content_type": {
+              "type": "string",
+              "enum": ["post", "carousel", "story", "thread", "article", "script", "ad_copy"],
+              "description": "Art des Contents"
+            },
+            "topic": {
+              "type": "string",
+              "description": "Thema des Contents"
+            },
+            "tone": {
+              "type": "string",
+              "enum": ["professional", "casual", "bold", "educational", "storytelling"],
+              "default": "professional"
+            },
+            "cta": {
+              "type": "string",
+              "description": "Optional: Call-to-Action am Ende"
+            },
+            "hashtags": {
+              "type": "boolean",
+              "default": true,
+              "description": "Hashtags generieren?"
+            }
+          },
+          "required": ["platform", "content_type", "topic"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "social_post",
+        "description": "Poste Content auf einer Social-Media-Plattform. Requires API Keys.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "platform": {
+              "type": "string",
+              "enum": ["linkedin", "instagram", "twitter", "facebook"]
+            },
+            "content": {
+              "type": "string",
+              "description": "Der zu postende Text"
+            },
+            "image_url": {
+              "type": "string",
+              "description": "Optional: Bild-URL"
+            },
+            "schedule": {
+              "type": "string",
+              "description": "Optional: Zeitpunkt zum Posten als ISO-Datum"
+            }
+          },
+          "required": ["platform", "content"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "seo_analyze",
+        "description": "SEO-Analyse für ein Keyword oder eine URL.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "string",
+              "description": "Keyword oder URL die analysiert werden soll"
+            },
+            "analysis_type": {
+              "type": "string",
+              "enum": ["keyword_research", "competitor_analysis", "on_page_audit", "content_gap"],
+              "description": "Art der Analyse"
+            }
+          },
+          "required": ["target", "analysis_type"]
+        }
+      }
+    }
+  ]
+}

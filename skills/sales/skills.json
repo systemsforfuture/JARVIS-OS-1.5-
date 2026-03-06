@@ -1,0 +1,76 @@
+{
+  "category": "sales",
+  "description": "Sales, CRM und Revenue Skills",
+  "skills": [
+    {
+      "slug": "lead-generation",
+      "name": "Lead-Generierung",
+      "description": "Potenzielle Kunden uber LinkedIn, Web-Research finden",
+      "requires_key": null,
+      "agents": ["donald"]
+    },
+    {
+      "slug": "lead-qualification",
+      "name": "Lead-Qualifizierung",
+      "description": "Leads nach BANT/MEDDIC bewerten und priorisieren",
+      "requires_key": null,
+      "agents": ["donald"]
+    },
+    {
+      "slug": "email-outreach",
+      "name": "E-Mail Outreach",
+      "description": "Personalisierte Cold E-Mails erstellen und senden",
+      "requires_key": null,
+      "agents": ["donald"]
+    },
+    {
+      "slug": "linkedin-outreach",
+      "name": "LinkedIn Outreach",
+      "description": "LinkedIn-Nachrichten und Connection Requests",
+      "requires_key": "LINKEDIN_TOKEN",
+      "agents": ["donald"]
+    },
+    {
+      "slug": "crm-hubspot",
+      "name": "HubSpot CRM",
+      "description": "Kontakte, Deals und Pipeline in HubSpot verwalten",
+      "requires_key": "HUBSPOT_API_KEY",
+      "agents": ["donald"]
+    },
+    {
+      "slug": "crm-airtable",
+      "name": "Airtable CRM",
+      "description": "Airtable als leichtgewichtiges CRM nutzen",
+      "requires_key": "AIRTABLE_API_KEY",
+      "agents": ["donald"]
+    },
+    {
+      "slug": "proposal-writer",
+      "name": "Angebote schreiben",
+      "description": "Professionelle Proposals und Angebote erstellen",
+      "requires_key": null,
+      "agents": ["donald"]
+    },
+    {
+      "slug": "followup-sequences",
+      "name": "Follow-up Sequenzen",
+      "description": "Automatische Follow-up E-Mail-Ketten",
+      "requires_key": null,
+      "agents": ["donald"]
+    },
+    {
+      "slug": "pipeline-tracker",
+      "name": "Pipeline Tracker",
+      "description": "Sales Pipeline uberwachen und forecasen",
+      "requires_key": null,
+      "agents": ["donald"]
+    },
+    {
+      "slug": "revenue-reporting",
+      "name": "Revenue Reports",
+      "description": "MRR, ARR, CAC, LTV Berichte erstellen",
+      "requires_key": null,
+      "agents": ["donald", "elon"]
+    }
+  ]
+}

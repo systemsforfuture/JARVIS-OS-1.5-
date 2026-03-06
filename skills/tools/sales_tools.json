@@ -1,0 +1,135 @@
+{
+  "name": "JARVIS Sales Tools",
+  "description": "Lead-Management, Pipeline, CRM — Agent: DONALD",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "lead_score",
+        "description": "Bewerte einen Lead nach BANT/MEDDIC-Kriterien. Gibt Score 0-100 zurück.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "company": {
+              "type": "string",
+              "description": "Firmenname"
+            },
+            "contact_name": {
+              "type": "string",
+              "description": "Name des Kontakts"
+            },
+            "contact_role": {
+              "type": "string",
+              "description": "Rolle/Position des Kontakts"
+            },
+            "budget": {
+              "type": "string",
+              "enum": ["unknown", "under_500", "500_2000", "2000_5000", "over_5000"],
+              "description": "Geschätztes monatliches Budget in EUR"
+            },
+            "authority": {
+              "type": "string",
+              "enum": ["decision_maker", "influencer", "user", "unknown"],
+              "description": "Entscheidungsbefugnis"
+            },
+            "need": {
+              "type": "string",
+              "description": "Beschreibung des Pain Points / Bedarfs"
+            },
+            "timeline": {
+              "type": "string",
+              "enum": ["immediate", "this_quarter", "this_year", "unknown"],
+              "description": "Wann will der Lead starten?"
+            },
+            "source": {
+              "type": "string",
+              "enum": ["inbound", "linkedin", "referral", "cold", "event"],
+              "description": "Wie kam der Lead?"
+            }
+          },
+          "required": ["company", "contact_name"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "pipeline_status",
+        "description": "Hole den aktuellen Sales-Pipeline-Status. Echte Zahlen aus der Datenbank.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "stage": {
+              "type": "string",
+              "enum": ["all", "lead", "qualified", "meeting", "proposal", "negotiation", "closed_won", "closed_lost"],
+              "description": "Optional: Nach Pipeline-Stage filtern"
+            },
+            "period": {
+              "type": "string",
+              "enum": ["week", "month", "quarter"],
+              "default": "month"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "cold_email_generate",
+        "description": "Generiere eine personalisierte Cold Email basierend auf Lead-Daten und ICP.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "lead_name": {
+              "type": "string"
+            },
+            "lead_company": {
+              "type": "string"
+            },
+            "lead_role": {
+              "type": "string"
+            },
+            "pain_point": {
+              "type": "string",
+              "description": "Konkreter Pain Point den wir lösen können"
+            },
+            "sequence_step": {
+              "type": "string",
+              "enum": ["intro", "value", "case_study", "final", "breakup"],
+              "description": "Welcher Schritt in der Follow-up-Sequenz?"
+            }
+          },
+          "required": ["lead_name", "lead_company", "pain_point"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "crm_update",
+        "description": "Update einen Eintrag im CRM (HubSpot oder Airtable).",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "crm": {
+              "type": "string",
+              "enum": ["hubspot", "airtable"],
+              "description": "Welches CRM?"
+            },
+            "action": {
+              "type": "string",
+              "enum": ["create_contact", "update_contact", "create_deal", "update_deal", "add_note", "log_activity"],
+              "description": "Was soll gemacht werden?"
+            },
+            "data": {
+              "type": "object",
+              "description": "Die Daten als Key-Value-Paare"
+            }
+          },
+          "required": ["crm", "action", "data"]
+        }
+      }
+    }
+  ]
+}

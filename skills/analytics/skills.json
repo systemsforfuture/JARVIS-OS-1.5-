@@ -1,0 +1,48 @@
+{
+  "category": "analytics",
+  "description": "Datenanalyse, KPIs und Intelligence Skills",
+  "skills": [
+    {
+      "slug": "data-analysis",
+      "name": "Datenanalyse",
+      "description": "Daten analysieren, Muster erkennen, visualisieren",
+      "requires_key": null,
+      "agents": ["elon"]
+    },
+    {
+      "slug": "kpi-tracking",
+      "name": "KPI Tracking",
+      "description": "Key Performance Indicators uberwachen und reporten",
+      "requires_key": null,
+      "agents": ["elon"]
+    },
+    {
+      "slug": "competitive-intel",
+      "name": "Competitive Intel",
+      "description": "Wettbewerber beobachten und analysieren",
+      "requires_key": null,
+      "agents": ["elon"]
+    },
+    {
+      "slug": "market-research",
+      "name": "Marktforschung",
+      "description": "Marktanalyse, Trends und Opportunities erkennen",
+      "requires_key": null,
+      "agents": ["elon"]
+    },
+    {
+      "slug": "bottleneck-finder",
+      "name": "Bottleneck Finder",
+      "description": "Engpasse in Prozessen, Budget und Zeit identifizieren",
+      "requires_key": null,
+      "agents": ["elon"]
+    },
+    {
+      "slug": "weekly-report",
+      "name": "Wochenbericht",
+      "description": "Wochentlichen Gesamtbericht fur DOM erstellen",
+      "requires_key": null,
+      "agents": ["elon", "jarvis"]
+    }
+  ]
+}

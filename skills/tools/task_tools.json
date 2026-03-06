@@ -1,0 +1,100 @@
+{
+  "name": "JARVIS Task Tools",
+  "description": "Task-Management und Agent-Delegation",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "task_create",
+        "description": "Erstelle einen neuen Task für einen Agent. Der Task wird automatisch durch die 8-Phasen-Pipeline geroutet.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "Kurzer Titel des Tasks"
+            },
+            "description": {
+              "type": "string",
+              "description": "Detaillierte Beschreibung was zu tun ist. Je präziser, desto besser das Ergebnis."
+            },
+            "agent": {
+              "type": "string",
+              "enum": ["jarvis", "elon", "steve", "donald", "archi", "donna", "iris", "satoshi", "felix", "andreas"],
+              "description": "Welcher Agent soll den Task ausführen?"
+            },
+            "priority": {
+              "type": "integer",
+              "enum": [0, 1, 2, 3],
+              "description": "0=kritisch (sofort), 1=hoch (heute), 2=normal (diese Woche), 3=niedrig (irgendwann)"
+            },
+            "task_type": {
+              "type": "string",
+              "description": "Art des Tasks, z.B. 'content_creation', 'lead_scoring', 'bug_fix', 'data_analysis'"
+            },
+            "deadline": {
+              "type": "string",
+              "description": "Optional: Deadline als ISO-Datum, z.B. '2025-03-15T18:00:00'"
+            },
+            "context": {
+              "type": "object",
+              "description": "Optional: Zusätzlicher Kontext als Key-Value-Paare"
+            }
+          },
+          "required": ["title", "description", "agent", "priority"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "task_delegate",
+        "description": "Delegiere einen existierenden Task an einen anderen Agent. Nur JARVIS und ELON dürfen delegieren.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "task_id": {
+              "type": "string",
+              "description": "ID des Tasks der delegiert werden soll"
+            },
+            "to_agent": {
+              "type": "string",
+              "enum": ["jarvis", "elon", "steve", "donald", "archi", "donna", "iris", "satoshi", "felix", "andreas"],
+              "description": "Ziel-Agent"
+            },
+            "reason": {
+              "type": "string",
+              "description": "Warum wird delegiert? (wird im Audit-Log gespeichert)"
+            }
+          },
+          "required": ["task_id", "to_agent", "reason"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "task_status",
+        "description": "Prüfe den Status eines Tasks oder aller Tasks eines Agents.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "task_id": {
+              "type": "string",
+              "description": "Optional: Spezifische Task-ID"
+            },
+            "agent": {
+              "type": "string",
+              "description": "Optional: Alle Tasks eines Agents"
+            },
+            "status": {
+              "type": "string",
+              "enum": ["pending", "in_progress", "completed", "failed"],
+              "description": "Optional: Nach Status filtern"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

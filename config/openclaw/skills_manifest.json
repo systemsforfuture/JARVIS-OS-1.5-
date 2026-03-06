@@ -1,0 +1,1446 @@
+{
+  "_comment": "JARVIS 1.5 — Complete Skills Manifest. Auto-installed to OpenClaw on startup.",
+  "version": "1.5.0",
+  "auto_install": true,
+
+  "agent_skills": {
+
+    "jarvis": {
+      "name": "JARVIS",
+      "role": "CEO & Orchestrator",
+      "skills": [
+        {
+          "id": "jarvis.delegate_task",
+          "name": "Task Delegation",
+          "description": "Delegiere eine Aufgabe an den besten Agenten im Team",
+          "category": "orchestration",
+          "parameters": {
+            "task": {"type": "string", "required": true, "description": "Die Aufgabe"},
+            "target_agent": {"type": "string", "required": false, "description": "Optional: Ziel-Agent (sonst auto-route)"},
+            "priority": {"type": "string", "enum": ["critical", "high", "normal", "low"], "default": "normal"},
+            "deadline": {"type": "string", "required": false, "description": "ISO-Datum"}
+          }
+        },
+        {
+          "id": "jarvis.memory_store",
+          "name": "Wissen speichern",
+          "description": "Speichere wichtige Informationen, Entscheidungen, Fakten dauerhaft",
+          "category": "memory",
+          "parameters": {
+            "content": {"type": "string", "required": true},
+            "category": {"type": "string", "enum": ["fact", "decision", "preference", "contact", "event", "learning"], "default": "fact"},
+            "importance": {"type": "integer", "min": 1, "max": 10, "default": 5}
+          }
+        },
+        {
+          "id": "jarvis.memory_recall",
+          "name": "Wissen abrufen",
+          "description": "Durchsuche alle gespeicherten Erinnerungen und Fakten",
+          "category": "memory",
+          "parameters": {
+            "query": {"type": "string", "required": true},
+            "category": {"type": "string", "required": false},
+            "limit": {"type": "integer", "default": 10}
+          }
+        },
+        {
+          "id": "jarvis.team_status",
+          "name": "Team Status",
+          "description": "Zeige den aktuellen Status aller Agenten und laufenden Tasks",
+          "category": "orchestration",
+          "parameters": {}
+        },
+        {
+          "id": "jarvis.daily_briefing",
+          "name": "Tagesbriefing",
+          "description": "Erstelle ein Briefing mit allen wichtigen Infos des Tages",
+          "category": "orchestration",
+          "parameters": {
+            "focus_areas": {"type": "array", "items": "string", "required": false}
+          }
+        },
+        {
+          "id": "jarvis.web_search",
+          "name": "Web-Recherche",
+          "description": "Suche im Internet nach aktuellen Informationen",
+          "category": "research",
+          "parameters": {
+            "query": {"type": "string", "required": true},
+            "max_results": {"type": "integer", "default": 5}
+          }
+        },
+        {
+          "id": "jarvis.calendar_check",
+          "name": "Kalender pruefen",
+          "description": "Zeige anstehende Termine und Deadlines",
+          "category": "calendar",
+          "parameters": {
+            "days_ahead": {"type": "integer", "default": 7}
+          }
+        },
+        {
+          "id": "jarvis.notification_send",
+          "name": "Benachrichtigung senden",
+          "description": "Sende eine Nachricht via Telegram an DOM oder das Team",
+          "category": "communication",
+          "parameters": {
+            "message": {"type": "string", "required": true},
+            "target": {"type": "string", "enum": ["dom", "team", "all"], "default": "dom"},
+            "urgency": {"type": "string", "enum": ["info", "warning", "critical"], "default": "info"}
+          }
+        },
+        {
+          "id": "jarvis.workflow_trigger",
+          "name": "N8N Workflow starten",
+          "description": "Triggere einen N8N Workflow ueber Webhook",
+          "category": "automation",
+          "requires_service": "n8n",
+          "parameters": {
+            "workflow_name": {"type": "string", "required": true},
+            "payload": {"type": "object", "required": false}
+          }
+        },
+        {
+          "id": "jarvis.omi_recall",
+          "name": "OMI Erinnerung abrufen",
+          "description": "Durchsuche alle OMI-Gespraeche und erfassten Erinnerungen",
+          "category": "memory",
+          "parameters": {
+            "query": {"type": "string", "required": true},
+            "days_back": {"type": "integer", "default": 30}
+          }
+        },
+        {
+          "id": "jarvis.chain_execute",
+          "name": "Agent-Chain ausfuehren",
+          "description": "Starte eine Multi-Agent-Chain (z.B. Content Pipeline, Sales Pipeline). Output von Agent A wird Input von Agent B.",
+          "category": "orchestration",
+          "parameters": {
+            "chain_id": {"type": "string", "required": true, "description": "Chain Template ID (content_pipeline, sales_pipeline, launch_campaign, error_resolution, weekly_review, customer_onboarding, competitor_intel)"},
+            "input_data": {"type": "string", "required": true, "description": "Start-Input fuer die Chain"},
+            "user_id": {"type": "string", "required": false, "default": "dom"}
+          }
+        },
+        {
+          "id": "jarvis.chain_custom",
+          "name": "Custom Chain erstellen",
+          "description": "Erstelle und fuehre eine individuelle Multi-Agent-Chain aus",
+          "category": "orchestration",
+          "parameters": {
+            "steps": {"type": "array", "required": true, "description": "Array von {agent, task_type, prompt_template} Schritten"},
+            "input_data": {"type": "string", "required": true}
+          }
+        },
+        {
+          "id": "jarvis.voice_reply",
+          "name": "Sprachantwort",
+          "description": "Antworte mit Stimme (TTS). Nutzt ElevenLabs > OpenAI > Edge-TTS Fallback-Chain.",
+          "category": "voice",
+          "parameters": {
+            "text": {"type": "string", "required": true, "description": "Text zum Vorlesen"},
+            "voice": {"type": "string", "required": false, "description": "Stimme (z.B. onyx, alloy, echo)"},
+            "language": {"type": "string", "default": "de"}
+          }
+        },
+        {
+          "id": "jarvis.voice_transcribe",
+          "name": "Sprache zu Text",
+          "description": "Transkribiere eine Audio-Datei zu Text (STT via Whisper)",
+          "category": "voice",
+          "parameters": {
+            "audio_path": {"type": "string", "required": true},
+            "language": {"type": "string", "default": "de"}
+          }
+        },
+        {
+          "id": "jarvis.file_process",
+          "name": "Datei verarbeiten",
+          "description": "Analysiere eine Datei (PDF, Bild, Tabelle, Code, Vertrag, Rechnung) mit KI",
+          "category": "files",
+          "parameters": {
+            "file_path": {"type": "string", "required": true},
+            "file_type": {"type": "string", "enum": ["pdf", "image", "spreadsheet", "code", "document", "auto"], "default": "auto"},
+            "analysis_type": {"type": "string", "enum": ["summary", "extract", "contract", "invoice", "code_review"], "default": "summary"}
+          }
+        },
+        {
+          "id": "jarvis.goal_create",
+          "name": "Ziel erstellen (OKR)",
+          "description": "Erstelle ein neues Quartalsziel mit Key Results",
+          "category": "goals",
+          "parameters": {
+            "title": {"type": "string", "required": true},
+            "description": {"type": "string", "required": false},
+            "quarter": {"type": "string", "required": false, "description": "z.B. Q1-2026"},
+            "key_results": {"type": "array", "required": false, "description": "Array von Key Result Strings"}
+          }
+        },
+        {
+          "id": "jarvis.goal_update",
+          "name": "Ziel-Fortschritt updaten",
+          "description": "Update den Fortschritt eines Key Results",
+          "category": "goals",
+          "parameters": {
+            "goal_id": {"type": "string", "required": true},
+            "key_result_index": {"type": "integer", "required": true},
+            "progress": {"type": "number", "required": true, "description": "Fortschritt 0-100"}
+          }
+        },
+        {
+          "id": "jarvis.habit_create",
+          "name": "Gewohnheit erstellen",
+          "description": "Erstelle eine taegliche Gewohnheit zum Tracken (mit Streak-Zaehler)",
+          "category": "goals",
+          "parameters": {
+            "name": {"type": "string", "required": true},
+            "frequency": {"type": "string", "enum": ["daily", "weekly", "weekdays"], "default": "daily"},
+            "category": {"type": "string", "required": false}
+          }
+        },
+        {
+          "id": "jarvis.habit_log",
+          "name": "Gewohnheit loggen",
+          "description": "Markiere eine Gewohnheit als heute erledigt",
+          "category": "goals",
+          "parameters": {
+            "habit_id": {"type": "string", "required": true},
+            "notes": {"type": "string", "required": false}
+          }
+        },
+        {
+          "id": "jarvis.heartbeat_status",
+          "name": "Heartbeat Status",
+          "description": "Zeige den aktuellen Heartbeat-Status: Health Score, letzte Analyse, autonome Aktionen",
+          "category": "system",
+          "parameters": {}
+        },
+        {
+          "id": "jarvis.morning_briefing",
+          "name": "Morning Briefing",
+          "description": "Erstelle das taegliche Morning Briefing (Termine, Deadlines, Tasks, KPIs, Empfehlungen)",
+          "category": "proactive",
+          "parameters": {
+            "user_id": {"type": "string", "default": "dom"}
+          }
+        },
+        {
+          "id": "jarvis.proactive_suggest",
+          "name": "Proaktive Vorschlaege",
+          "description": "Generiere proaktive Vorschlaege basierend auf Patterns, Learnings und aktuellem Kontext",
+          "category": "proactive",
+          "parameters": {}
+        }
+      ]
+    },
+
+    "elon": {
+      "name": "ELON",
+      "role": "COO & Quality Control",
+      "skills": [
+        {
+          "id": "elon.kpi_dashboard",
+          "name": "KPI Dashboard",
+          "description": "Zeige alle aktuellen KPIs: Tasks, Kosten, Quality Scores, Agentenleistung",
+          "category": "analytics",
+          "parameters": {
+            "period": {"type": "string", "enum": ["today", "week", "month", "quarter"], "default": "week"}
+          }
+        },
+        {
+          "id": "elon.quality_audit",
+          "name": "Quality Audit",
+          "description": "Pruefe die Qualitaet der letzten Agenten-Outputs",
+          "category": "quality",
+          "parameters": {
+            "agent_slug": {"type": "string", "required": false, "description": "Spezifischer Agent oder alle"},
+            "min_score": {"type": "number", "default": 0.6}
+          }
+        },
+        {
+          "id": "elon.pattern_analysis",
+          "name": "Muster-Analyse",
+          "description": "Analysiere wiederkehrende Muster in Fehlern und Erfolgen",
+          "category": "analytics",
+          "parameters": {
+            "focus": {"type": "string", "enum": ["errors", "successes", "costs", "all"], "default": "all"}
+          }
+        },
+        {
+          "id": "elon.optimization_plan",
+          "name": "Optimierungsplan",
+          "description": "Erstelle einen konkreten Plan zur Verbesserung basierend auf Daten",
+          "category": "strategy",
+          "parameters": {
+            "area": {"type": "string", "required": true, "description": "Bereich: costs, speed, quality, revenue"},
+            "timeframe": {"type": "string", "default": "2_weeks"}
+          }
+        },
+        {
+          "id": "elon.cost_analysis",
+          "name": "Kosten-Analyse",
+          "description": "Analysiere API-Kosten pro Agent, Model und Task-Typ",
+          "category": "analytics",
+          "parameters": {
+            "period": {"type": "string", "default": "month"},
+            "group_by": {"type": "string", "enum": ["agent", "model", "task_type"], "default": "agent"}
+          }
+        },
+        {
+          "id": "elon.weekly_report",
+          "name": "Wochenbericht",
+          "description": "Erstelle einen umfassenden Wochenbericht fuer DOM",
+          "category": "reporting",
+          "parameters": {}
+        },
+        {
+          "id": "elon.benchmark",
+          "name": "Performance Benchmark",
+          "description": "Vergleiche aktuelle Performance mit vorherigen Perioden",
+          "category": "analytics",
+          "parameters": {
+            "metric": {"type": "string", "enum": ["speed", "quality", "cost", "throughput"], "required": true}
+          }
+        },
+        {
+          "id": "elon.alert_rules",
+          "name": "Alert-Regeln verwalten",
+          "description": "Erstelle oder aendere automatische Alerts bei KPI-Abweichungen",
+          "category": "monitoring",
+          "parameters": {
+            "metric": {"type": "string", "required": true},
+            "threshold": {"type": "number", "required": true},
+            "direction": {"type": "string", "enum": ["above", "below"], "required": true}
+          }
+        },
+        {
+          "id": "elon.health_report",
+          "name": "System Health Report",
+          "description": "Erstelle einen detaillierten System-Gesundheitsbericht aus Heartbeat-Daten",
+          "category": "monitoring",
+          "parameters": {
+            "period": {"type": "string", "enum": ["1h", "6h", "24h", "7d"], "default": "24h"},
+            "include_actions": {"type": "boolean", "default": true}
+          }
+        },
+        {
+          "id": "elon.agent_performance",
+          "name": "Agenten-Leistungsanalyse",
+          "description": "Analysiere die Performance aller Agenten (Fehlerrate, Qualitaet, Geschwindigkeit, Trends)",
+          "category": "analytics",
+          "parameters": {
+            "agent_slug": {"type": "string", "required": false, "description": "Spezifischer Agent oder alle"},
+            "period": {"type": "string", "enum": ["today", "week", "month"], "default": "week"}
+          }
+        },
+        {
+          "id": "elon.chain_audit",
+          "name": "Chain-Qualitaetspruefung",
+          "description": "Pruefe die Qualitaet der Ergebnisse einer Agent-Chain",
+          "category": "quality",
+          "parameters": {
+            "chain_id": {"type": "string", "required": true},
+            "execution_id": {"type": "string", "required": false}
+          }
+        }
+      ]
+    },
+
+    "steve": {
+      "name": "STEVE",
+      "role": "CMO & Marketing",
+      "skills": [
+        {
+          "id": "steve.content_create",
+          "name": "Content erstellen",
+          "description": "Erstelle hochwertigen Content: Blog, Newsletter, Captions, Threads",
+          "category": "content",
+          "parameters": {
+            "type": {"type": "string", "enum": ["blog_post", "newsletter", "social_caption", "twitter_thread", "linkedin_post", "press_release", "landing_page"], "required": true},
+            "topic": {"type": "string", "required": true},
+            "tone": {"type": "string", "enum": ["professional", "casual", "provocative", "educational", "inspirational"], "default": "professional"},
+            "length": {"type": "string", "enum": ["short", "medium", "long"], "default": "medium"},
+            "target_audience": {"type": "string", "required": false}
+          }
+        },
+        {
+          "id": "steve.social_post",
+          "name": "Social Media Post",
+          "description": "Poste oder plane einen Beitrag auf Social Media",
+          "category": "social_media",
+          "requires_service": "postiz",
+          "parameters": {
+            "platforms": {"type": "array", "items": "string", "required": true, "description": "instagram, linkedin, twitter, facebook, tiktok"},
+            "content": {"type": "string", "required": true},
+            "media_url": {"type": "string", "required": false},
+            "schedule_at": {"type": "string", "required": false, "description": "ISO-Datum oder 'now'"}
+          }
+        },
+        {
+          "id": "steve.social_analytics",
+          "name": "Social Media Analytics",
+          "description": "Analysiere Performance aller Social-Media-Kanaele",
+          "category": "social_media",
+          "requires_service": "postiz",
+          "parameters": {
+            "platform": {"type": "string", "required": false, "description": "Alle oder spezifische Plattform"},
+            "period": {"type": "string", "default": "week"}
+          }
+        },
+        {
+          "id": "steve.seo_analyze",
+          "name": "SEO Analyse",
+          "description": "Analysiere SEO-Performance einer URL oder Domain",
+          "category": "seo",
+          "parameters": {
+            "url": {"type": "string", "required": true},
+            "competitors": {"type": "array", "items": "string", "required": false}
+          }
+        },
+        {
+          "id": "steve.seo_keywords",
+          "name": "Keyword Recherche",
+          "description": "Finde die besten Keywords fuer ein Thema",
+          "category": "seo",
+          "parameters": {
+            "topic": {"type": "string", "required": true},
+            "language": {"type": "string", "default": "de"},
+            "intent": {"type": "string", "enum": ["informational", "transactional", "navigational"], "default": "informational"}
+          }
+        },
+        {
+          "id": "steve.content_calendar",
+          "name": "Content Kalender",
+          "description": "Plane einen Content-Kalender fuer die naechsten Wochen",
+          "category": "content",
+          "parameters": {
+            "weeks": {"type": "integer", "default": 4},
+            "platforms": {"type": "array", "items": "string", "required": true},
+            "themes": {"type": "array", "items": "string", "required": false}
+          }
+        },
+        {
+          "id": "steve.newsletter_create",
+          "name": "Newsletter erstellen",
+          "description": "Erstelle und versende einen Newsletter",
+          "category": "content",
+          "parameters": {
+            "subject": {"type": "string", "required": true},
+            "content": {"type": "string", "required": true},
+            "list": {"type": "string", "required": false, "description": "Empfaengerliste"}
+          }
+        },
+        {
+          "id": "steve.brand_voice_check",
+          "name": "Brand Voice Check",
+          "description": "Pruefe ob ein Text zur Markensprache passt und korrigiere ihn",
+          "category": "brand",
+          "parameters": {
+            "text": {"type": "string", "required": true},
+            "brand": {"type": "string", "required": false, "description": "Markenname, default: Firmenname aus Config"}
+          }
+        },
+        {
+          "id": "steve.competitor_analysis",
+          "name": "Wettbewerber-Analyse",
+          "description": "Analysiere Social-Media und Content-Strategie von Wettbewerbern",
+          "category": "research",
+          "parameters": {
+            "competitor_urls": {"type": "array", "items": "string", "required": true}
+          }
+        },
+        {
+          "id": "steve.hashtag_research",
+          "name": "Hashtag Recherche",
+          "description": "Finde die besten Hashtags fuer ein Thema und eine Plattform",
+          "category": "social_media",
+          "parameters": {
+            "topic": {"type": "string", "required": true},
+            "platform": {"type": "string", "enum": ["instagram", "twitter", "linkedin", "tiktok"], "required": true},
+            "count": {"type": "integer", "default": 20}
+          }
+        }
+      ]
+    },
+
+    "donald": {
+      "name": "DONALD",
+      "role": "CSO & Sales",
+      "skills": [
+        {
+          "id": "donald.lead_research",
+          "name": "Lead Recherche",
+          "description": "Recherchiere potenzielle Leads und Unternehmen",
+          "category": "sales",
+          "parameters": {
+            "criteria": {"type": "string", "required": true, "description": "Branche, Groesse, Region, etc."},
+            "max_results": {"type": "integer", "default": 20}
+          }
+        },
+        {
+          "id": "donald.lead_score",
+          "name": "Lead Scoring",
+          "description": "Bewerte einen Lead anhand definierter Kriterien",
+          "category": "sales",
+          "parameters": {
+            "company": {"type": "string", "required": true},
+            "contact_name": {"type": "string", "required": false},
+            "context": {"type": "string", "required": false, "description": "Zusaetzliche Infos zum Lead"}
+          }
+        },
+        {
+          "id": "donald.cold_email",
+          "name": "Cold Email generieren",
+          "description": "Erstelle eine personalisierte Cold-Email basierend auf Lead-Recherche",
+          "category": "sales",
+          "parameters": {
+            "company": {"type": "string", "required": true},
+            "contact_name": {"type": "string", "required": true},
+            "value_prop": {"type": "string", "required": true, "description": "Unser Wertversprechen"},
+            "tone": {"type": "string", "enum": ["formal", "casual", "direct"], "default": "direct"}
+          }
+        },
+        {
+          "id": "donald.pipeline_status",
+          "name": "Sales Pipeline",
+          "description": "Zeige den aktuellen Stand der Sales Pipeline",
+          "category": "sales",
+          "requires_service": "hubspot",
+          "parameters": {
+            "stage": {"type": "string", "required": false, "description": "Filter nach Stage"}
+          }
+        },
+        {
+          "id": "donald.proposal_create",
+          "name": "Angebot erstellen",
+          "description": "Erstelle ein professionelles Angebot/Proposal",
+          "category": "sales",
+          "parameters": {
+            "client": {"type": "string", "required": true},
+            "services": {"type": "array", "items": "string", "required": true},
+            "budget_range": {"type": "string", "required": false},
+            "timeline": {"type": "string", "required": false}
+          }
+        },
+        {
+          "id": "donald.crm_contact",
+          "name": "CRM Kontakt verwalten",
+          "description": "Erstelle oder aktualisiere einen Kontakt im CRM",
+          "category": "crm",
+          "requires_service": "hubspot",
+          "parameters": {
+            "action": {"type": "string", "enum": ["create", "update", "search"], "required": true},
+            "name": {"type": "string", "required": true},
+            "email": {"type": "string", "required": false},
+            "company": {"type": "string", "required": false},
+            "notes": {"type": "string", "required": false}
+          }
+        },
+        {
+          "id": "donald.deal_create",
+          "name": "Deal anlegen",
+          "description": "Erstelle einen neuen Deal in der Pipeline",
+          "category": "crm",
+          "requires_service": "hubspot",
+          "parameters": {
+            "name": {"type": "string", "required": true},
+            "amount": {"type": "number", "required": true},
+            "stage": {"type": "string", "required": true},
+            "contact_email": {"type": "string", "required": false},
+            "close_date": {"type": "string", "required": false}
+          }
+        },
+        {
+          "id": "donald.followup_plan",
+          "name": "Follow-Up Plan",
+          "description": "Erstelle einen automatischen Follow-Up-Plan fuer einen Lead",
+          "category": "sales",
+          "parameters": {
+            "lead_name": {"type": "string", "required": true},
+            "context": {"type": "string", "required": true},
+            "touchpoints": {"type": "integer", "default": 5},
+            "interval_days": {"type": "integer", "default": 3}
+          }
+        },
+        {
+          "id": "donald.objection_handling",
+          "name": "Einwandbehandlung",
+          "description": "Generiere Antworten auf typische Einwaende",
+          "category": "sales",
+          "parameters": {
+            "objection": {"type": "string", "required": true},
+            "product": {"type": "string", "required": false}
+          }
+        },
+        {
+          "id": "donald.linkedin_lookup",
+          "name": "LinkedIn Recherche",
+          "description": "Recherchiere eine Person oder Firma auf LinkedIn",
+          "category": "research",
+          "parameters": {
+            "name": {"type": "string", "required": true},
+            "company": {"type": "string", "required": false}
+          }
+        }
+      ]
+    },
+
+    "archi": {
+      "name": "ARCHI",
+      "role": "CTO & Development",
+      "skills": [
+        {
+          "id": "archi.code_review",
+          "name": "Code Review",
+          "description": "Reviewe Code auf Qualitaet, Security und Best Practices",
+          "category": "development",
+          "parameters": {
+            "code": {"type": "string", "required": false},
+            "repo_url": {"type": "string", "required": false},
+            "file_path": {"type": "string", "required": false},
+            "focus": {"type": "string", "enum": ["security", "performance", "readability", "all"], "default": "all"}
+          }
+        },
+        {
+          "id": "archi.deploy",
+          "name": "Deployment",
+          "description": "Deploye eine Anwendung oder Service",
+          "category": "devops",
+          "parameters": {
+            "service": {"type": "string", "required": true},
+            "environment": {"type": "string", "enum": ["staging", "production"], "required": true},
+            "version": {"type": "string", "required": false}
+          }
+        },
+        {
+          "id": "archi.server_status",
+          "name": "Server Status",
+          "description": "Pruefe den Status aller Server und Services",
+          "category": "monitoring",
+          "parameters": {
+            "service": {"type": "string", "required": false, "description": "Spezifischer Service oder alle"}
+          }
+        },
+        {
+          "id": "archi.db_query",
+          "name": "Datenbank Query",
+          "description": "Fuehre eine sichere Datenbankabfrage aus",
+          "category": "development",
+          "parameters": {
+            "query": {"type": "string", "required": true},
+            "database": {"type": "string", "default": "jarvis"}
+          }
+        },
+        {
+          "id": "archi.security_scan",
+          "name": "Security Scan",
+          "description": "Fuehre einen Sicherheits-Scan auf einem Service oder Code durch",
+          "category": "security",
+          "parameters": {
+            "target": {"type": "string", "required": true, "description": "URL, Repo oder Service-Name"},
+            "scan_type": {"type": "string", "enum": ["dependencies", "code", "infrastructure", "full"], "default": "full"}
+          }
+        },
+        {
+          "id": "archi.log_analyze",
+          "name": "Log Analyse",
+          "description": "Analysiere Logs eines Services auf Fehler und Anomalien",
+          "category": "monitoring",
+          "parameters": {
+            "service": {"type": "string", "required": true},
+            "hours_back": {"type": "integer", "default": 24},
+            "level": {"type": "string", "enum": ["error", "warning", "all"], "default": "error"}
+          }
+        },
+        {
+          "id": "archi.git_operations",
+          "name": "Git Operationen",
+          "description": "Fuehre Git-Operationen aus (Branch, PR, Merge)",
+          "category": "development",
+          "parameters": {
+            "action": {"type": "string", "enum": ["create_branch", "create_pr", "merge", "status", "diff"], "required": true},
+            "repo": {"type": "string", "required": true},
+            "branch": {"type": "string", "required": false}
+          }
+        },
+        {
+          "id": "archi.architecture_review",
+          "name": "Architektur Review",
+          "description": "Bewerte eine System-Architektur und schlage Verbesserungen vor",
+          "category": "development",
+          "parameters": {
+            "description": {"type": "string", "required": true},
+            "stack": {"type": "array", "items": "string", "required": false}
+          }
+        },
+        {
+          "id": "archi.docker_manage",
+          "name": "Docker Management",
+          "description": "Verwalte Docker Container und Services",
+          "category": "devops",
+          "parameters": {
+            "action": {"type": "string", "enum": ["status", "restart", "logs", "scale", "update"], "required": true},
+            "service": {"type": "string", "required": true}
+          }
+        },
+        {
+          "id": "archi.api_test",
+          "name": "API Test",
+          "description": "Teste einen API-Endpoint auf Funktionalitaet und Performance",
+          "category": "development",
+          "parameters": {
+            "url": {"type": "string", "required": true},
+            "method": {"type": "string", "enum": ["GET", "POST", "PUT", "DELETE"], "default": "GET"},
+            "body": {"type": "object", "required": false},
+            "headers": {"type": "object", "required": false}
+          }
+        }
+      ]
+    },
+
+    "donna": {
+      "name": "DONNA",
+      "role": "COO & Operations",
+      "skills": [
+        {
+          "id": "donna.calendar_manage",
+          "name": "Kalender verwalten",
+          "description": "Erstelle, aendere oder pruefe Kalendereintraege",
+          "category": "calendar",
+          "parameters": {
+            "action": {"type": "string", "enum": ["create", "update", "delete", "check", "find_slot"], "required": true},
+            "title": {"type": "string", "required": false},
+            "date": {"type": "string", "required": false},
+            "time": {"type": "string", "required": false},
+            "duration_minutes": {"type": "integer", "default": 60},
+            "attendees": {"type": "array", "items": "string", "required": false}
+          }
+        },
+        {
+          "id": "donna.email_manage",
+          "name": "Email verwalten",
+          "description": "Lese, sende oder kategorisiere Emails",
+          "category": "email",
+          "parameters": {
+            "action": {"type": "string", "enum": ["read", "send", "reply", "categorize", "search", "draft"], "required": true},
+            "to": {"type": "string", "required": false},
+            "subject": {"type": "string", "required": false},
+            "body": {"type": "string", "required": false},
+            "filter": {"type": "string", "required": false, "description": "Suchfilter fuer read/search"}
+          }
+        },
+        {
+          "id": "donna.document_create",
+          "name": "Dokument erstellen",
+          "description": "Erstelle Dokumente: Vertraege, Protokolle, Briefe, Reports",
+          "category": "documents",
+          "parameters": {
+            "type": {"type": "string", "enum": ["contract", "protocol", "letter", "report", "sop", "invoice", "memo"], "required": true},
+            "title": {"type": "string", "required": true},
+            "content_brief": {"type": "string", "required": true},
+            "format": {"type": "string", "enum": ["pdf", "docx", "markdown"], "default": "markdown"}
+          }
+        },
+        {
+          "id": "donna.meeting_notes",
+          "name": "Meeting Protokoll",
+          "description": "Erstelle ein strukturiertes Meeting-Protokoll aus Notizen/Transkript",
+          "category": "documents",
+          "parameters": {
+            "transcript": {"type": "string", "required": true},
+            "participants": {"type": "array", "items": "string", "required": false},
+            "include_action_items": {"type": "boolean", "default": true}
+          }
+        },
+        {
+          "id": "donna.reminder_set",
+          "name": "Erinnerung setzen",
+          "description": "Setze eine Erinnerung fuer einen bestimmten Zeitpunkt",
+          "category": "calendar",
+          "parameters": {
+            "message": {"type": "string", "required": true},
+            "datetime": {"type": "string", "required": true, "description": "ISO-Datum oder relativ ('in 2 Stunden')"},
+            "repeat": {"type": "string", "enum": ["once", "daily", "weekly", "monthly"], "default": "once"}
+          }
+        },
+        {
+          "id": "donna.sop_create",
+          "name": "SOP erstellen",
+          "description": "Erstelle eine Standard Operating Procedure (Arbeitsanweisung)",
+          "category": "documents",
+          "parameters": {
+            "title": {"type": "string", "required": true},
+            "process_description": {"type": "string", "required": true},
+            "department": {"type": "string", "required": false}
+          }
+        },
+        {
+          "id": "donna.compliance_check",
+          "name": "Compliance Check",
+          "description": "Pruefe ein Dokument oder Prozess auf Compliance (DSGVO, AGB, etc.)",
+          "category": "compliance",
+          "parameters": {
+            "document": {"type": "string", "required": true},
+            "regulation": {"type": "string", "enum": ["gdpr", "terms", "privacy", "labor_law", "tax"], "required": true}
+          }
+        },
+        {
+          "id": "donna.invoice_create",
+          "name": "Rechnung erstellen",
+          "description": "Erstelle eine professionelle Rechnung",
+          "category": "documents",
+          "parameters": {
+            "client": {"type": "string", "required": true},
+            "items": {"type": "array", "required": true, "description": "Array von {description, quantity, price}"},
+            "due_days": {"type": "integer", "default": 14},
+            "tax_rate": {"type": "number", "default": 19}
+          }
+        },
+        {
+          "id": "donna.travel_plan",
+          "name": "Reiseplanung",
+          "description": "Plane eine Geschaeftsreise mit Fluegen, Hotels, Terminen",
+          "category": "operations",
+          "parameters": {
+            "destination": {"type": "string", "required": true},
+            "dates": {"type": "string", "required": true},
+            "purpose": {"type": "string", "required": false},
+            "budget": {"type": "number", "required": false}
+          }
+        },
+        {
+          "id": "donna.hr_onboarding",
+          "name": "Mitarbeiter Onboarding",
+          "description": "Erstelle einen Onboarding-Plan fuer neue Mitarbeiter",
+          "category": "hr",
+          "parameters": {
+            "name": {"type": "string", "required": true},
+            "role": {"type": "string", "required": true},
+            "start_date": {"type": "string", "required": true},
+            "department": {"type": "string", "required": false}
+          }
+        },
+        {
+          "id": "donna.contract_analyze",
+          "name": "Vertrag analysieren",
+          "description": "Analysiere einen Vertrag: Laufzeit, Kuendigungsfristen, Risiken, Key Terms",
+          "category": "files",
+          "parameters": {
+            "file_path": {"type": "string", "required": true},
+            "focus": {"type": "string", "enum": ["full", "risks", "terms", "deadlines"], "default": "full"}
+          }
+        },
+        {
+          "id": "donna.voice_memo",
+          "name": "Sprach-Memo erstellen",
+          "description": "Erstelle ein Sprach-Memo (TTS) und sende es per Telegram",
+          "category": "voice",
+          "parameters": {
+            "text": {"type": "string", "required": true},
+            "recipient": {"type": "string", "required": false}
+          }
+        },
+        {
+          "id": "donna.goal_report",
+          "name": "Ziel-Report erstellen",
+          "description": "Erstelle einen Fortschrittsbericht aller OKRs und Gewohnheiten",
+          "category": "goals",
+          "parameters": {
+            "quarter": {"type": "string", "required": false},
+            "format": {"type": "string", "enum": ["summary", "detailed", "presentation"], "default": "summary"}
+          }
+        }
+      ]
+    },
+
+    "iris": {
+      "name": "IRIS",
+      "role": "Creative Director",
+      "skills": [
+        {
+          "id": "iris.image_generate",
+          "name": "Bild generieren",
+          "description": "Generiere ein Bild mit AI (DALL-E, Midjourney, Stable Diffusion)",
+          "category": "design",
+          "parameters": {
+            "prompt": {"type": "string", "required": true},
+            "style": {"type": "string", "enum": ["photorealistic", "illustration", "minimal", "abstract", "3d", "watercolor", "corporate"], "default": "photorealistic"},
+            "size": {"type": "string", "enum": ["1024x1024", "1024x1792", "1792x1024"], "default": "1024x1024"},
+            "model": {"type": "string", "enum": ["dall-e-3", "stable-diffusion", "midjourney"], "default": "dall-e-3"}
+          }
+        },
+        {
+          "id": "iris.brand_kit",
+          "name": "Brand Kit",
+          "description": "Erstelle oder pruefe ein komplettes Brand Kit (Farben, Fonts, Logos)",
+          "category": "brand",
+          "parameters": {
+            "action": {"type": "string", "enum": ["create", "check", "update"], "required": true},
+            "brand_name": {"type": "string", "required": true},
+            "industry": {"type": "string", "required": false},
+            "values": {"type": "array", "items": "string", "required": false}
+          }
+        },
+        {
+          "id": "iris.social_visual",
+          "name": "Social Media Visual",
+          "description": "Erstelle ein optimiertes Visual fuer Social Media",
+          "category": "design",
+          "parameters": {
+            "platform": {"type": "string", "enum": ["instagram_post", "instagram_story", "linkedin", "twitter", "facebook_cover", "youtube_thumbnail"], "required": true},
+            "headline": {"type": "string", "required": true},
+            "subtext": {"type": "string", "required": false},
+            "style": {"type": "string", "required": false}
+          }
+        },
+        {
+          "id": "iris.logo_create",
+          "name": "Logo erstellen",
+          "description": "Erstelle Logo-Varianten basierend auf Briefing",
+          "category": "design",
+          "parameters": {
+            "brand_name": {"type": "string", "required": true},
+            "type": {"type": "string", "enum": ["wordmark", "symbol", "combination", "emblem"], "default": "combination"},
+            "style": {"type": "string", "required": false},
+            "colors": {"type": "array", "items": "string", "required": false}
+          }
+        },
+        {
+          "id": "iris.presentation_design",
+          "name": "Praesentation designen",
+          "description": "Erstelle eine professionelle Praesentation (Pitch Deck, Keynote)",
+          "category": "design",
+          "parameters": {
+            "title": {"type": "string", "required": true},
+            "slides": {"type": "integer", "default": 10},
+            "type": {"type": "string", "enum": ["pitch_deck", "keynote", "sales", "report", "training"], "default": "pitch_deck"},
+            "content_outline": {"type": "string", "required": true}
+          }
+        },
+        {
+          "id": "iris.color_palette",
+          "name": "Farbpalette erstellen",
+          "description": "Generiere eine harmonische Farbpalette basierend auf Kriterien",
+          "category": "design",
+          "parameters": {
+            "mood": {"type": "string", "required": true, "description": "z.B. professional, playful, luxury, tech"},
+            "base_color": {"type": "string", "required": false, "description": "Hex-Farbcode"},
+            "count": {"type": "integer", "default": 5}
+          }
+        },
+        {
+          "id": "iris.mockup_create",
+          "name": "Mockup erstellen",
+          "description": "Erstelle ein UI/UX Mockup fuer Web oder App",
+          "category": "design",
+          "parameters": {
+            "type": {"type": "string", "enum": ["website", "app", "dashboard", "landing_page", "email"], "required": true},
+            "description": {"type": "string", "required": true},
+            "style": {"type": "string", "required": false}
+          }
+        },
+        {
+          "id": "iris.video_concept",
+          "name": "Video Konzept",
+          "description": "Erstelle ein Konzept/Storyboard fuer ein Video",
+          "category": "content",
+          "parameters": {
+            "type": {"type": "string", "enum": ["explainer", "social_reel", "product_demo", "testimonial", "brand_story"], "required": true},
+            "duration_seconds": {"type": "integer", "default": 30},
+            "key_message": {"type": "string", "required": true}
+          }
+        }
+      ]
+    },
+
+    "satoshi": {
+      "name": "SATOSHI",
+      "role": "CFO & Finance",
+      "skills": [
+        {
+          "id": "satoshi.crypto_price",
+          "name": "Krypto Preis",
+          "description": "Aktueller Preis und Marktdaten einer Kryptowaehrung",
+          "category": "crypto",
+          "parameters": {
+            "symbol": {"type": "string", "required": true, "description": "z.B. BTC, ETH, SOL"},
+            "currency": {"type": "string", "default": "EUR"}
+          }
+        },
+        {
+          "id": "satoshi.crypto_analysis",
+          "name": "Krypto Analyse",
+          "description": "Technische und fundamentale Analyse einer Kryptowaehrung",
+          "category": "crypto",
+          "parameters": {
+            "symbol": {"type": "string", "required": true},
+            "timeframe": {"type": "string", "enum": ["1h", "4h", "1d", "1w", "1m"], "default": "1d"},
+            "indicators": {"type": "array", "items": "string", "required": false, "description": "RSI, MACD, BB, EMA"}
+          }
+        },
+        {
+          "id": "satoshi.portfolio_track",
+          "name": "Portfolio Tracking",
+          "description": "Tracke und analysiere das Krypto-Portfolio",
+          "category": "crypto",
+          "parameters": {
+            "action": {"type": "string", "enum": ["status", "add", "remove", "performance"], "default": "status"}
+          }
+        },
+        {
+          "id": "satoshi.budget_plan",
+          "name": "Budget Planung",
+          "description": "Erstelle oder analysiere ein Budget",
+          "category": "finance",
+          "parameters": {
+            "period": {"type": "string", "enum": ["month", "quarter", "year"], "required": true},
+            "categories": {"type": "array", "items": "string", "required": false},
+            "revenue_target": {"type": "number", "required": false}
+          }
+        },
+        {
+          "id": "satoshi.financial_report",
+          "name": "Finanzbericht",
+          "description": "Erstelle einen Finanzbericht (GuV, Cashflow, Bilanz)",
+          "category": "finance",
+          "parameters": {
+            "type": {"type": "string", "enum": ["pnl", "cashflow", "balance_sheet", "summary"], "required": true},
+            "period": {"type": "string", "required": true}
+          }
+        },
+        {
+          "id": "satoshi.expense_track",
+          "name": "Ausgaben tracken",
+          "description": "Erfasse und kategorisiere Ausgaben",
+          "category": "finance",
+          "parameters": {
+            "action": {"type": "string", "enum": ["add", "list", "analyze", "report"], "required": true},
+            "amount": {"type": "number", "required": false},
+            "category": {"type": "string", "required": false},
+            "description": {"type": "string", "required": false}
+          }
+        },
+        {
+          "id": "satoshi.price_alert",
+          "name": "Preis-Alert",
+          "description": "Setze einen Preis-Alert fuer eine Kryptowaehrung",
+          "category": "crypto",
+          "parameters": {
+            "symbol": {"type": "string", "required": true},
+            "target_price": {"type": "number", "required": true},
+            "direction": {"type": "string", "enum": ["above", "below"], "required": true}
+          }
+        },
+        {
+          "id": "satoshi.tax_estimate",
+          "name": "Steuer Schaetzung",
+          "description": "Schaetze Steuern auf Krypto-Gewinne oder Geschaeftseinkommen",
+          "category": "finance",
+          "parameters": {
+            "income": {"type": "number", "required": true},
+            "type": {"type": "string", "enum": ["crypto_gains", "business_income", "freelance"], "required": true},
+            "country": {"type": "string", "default": "DE"}
+          }
+        },
+        {
+          "id": "satoshi.market_sentiment",
+          "name": "Markt Stimmung",
+          "description": "Analysiere die aktuelle Marktstimmung (Fear & Greed, Social Sentiment)",
+          "category": "crypto",
+          "parameters": {
+            "market": {"type": "string", "enum": ["crypto", "stocks", "all"], "default": "crypto"}
+          }
+        },
+        {
+          "id": "satoshi.invoice_analyze",
+          "name": "Rechnung analysieren",
+          "description": "Extrahiere strukturierte Daten aus einer Rechnung (Betrag, Faelligkeit, Posten, MwSt)",
+          "category": "finance",
+          "parameters": {
+            "file_path": {"type": "string", "required": true}
+          }
+        },
+        {
+          "id": "satoshi.financial_forecast",
+          "name": "Finanzprognose",
+          "description": "Erstelle eine Finanzprognose basierend auf historischen Daten und Trends",
+          "category": "finance",
+          "parameters": {
+            "period": {"type": "string", "enum": ["month", "quarter", "year"], "default": "quarter"},
+            "include_crypto": {"type": "boolean", "default": false}
+          }
+        }
+      ]
+    },
+
+    "felix": {
+      "name": "FELIX",
+      "role": "Head of Customer Success",
+      "skills": [
+        {
+          "id": "felix.ticket_manage",
+          "name": "Support Ticket",
+          "description": "Erstelle, bearbeite oder beantworte ein Support-Ticket",
+          "category": "support",
+          "parameters": {
+            "action": {"type": "string", "enum": ["create", "respond", "escalate", "close", "list"], "required": true},
+            "ticket_id": {"type": "string", "required": false},
+            "customer": {"type": "string", "required": false},
+            "message": {"type": "string", "required": false},
+            "priority": {"type": "string", "enum": ["low", "normal", "high", "urgent"], "default": "normal"}
+          }
+        },
+        {
+          "id": "felix.customer_health",
+          "name": "Kunden Health Score",
+          "description": "Berechne den Health Score eines Kunden basierend auf Aktivitaet",
+          "category": "customer_success",
+          "parameters": {
+            "customer_id": {"type": "string", "required": true},
+            "include_history": {"type": "boolean", "default": true}
+          }
+        },
+        {
+          "id": "felix.churn_prediction",
+          "name": "Churn Vorhersage",
+          "description": "Identifiziere Kunden mit hohem Abwanderungsrisiko",
+          "category": "customer_success",
+          "parameters": {
+            "threshold": {"type": "number", "default": 0.7, "description": "Risiko-Schwelle (0-1)"},
+            "period": {"type": "string", "default": "month"}
+          }
+        },
+        {
+          "id": "felix.onboarding_status",
+          "name": "Onboarding Status",
+          "description": "Pruefe den Onboarding-Fortschritt neuer Kunden",
+          "category": "customer_success",
+          "parameters": {
+            "customer_id": {"type": "string", "required": false, "description": "Spezifischer Kunde oder alle"}
+          }
+        },
+        {
+          "id": "felix.nps_survey",
+          "name": "NPS Umfrage",
+          "description": "Erstelle und versende eine NPS-Umfrage",
+          "category": "customer_success",
+          "parameters": {
+            "audience": {"type": "string", "enum": ["all_customers", "new_customers", "at_risk", "specific"], "required": true},
+            "customer_ids": {"type": "array", "items": "string", "required": false}
+          }
+        },
+        {
+          "id": "felix.faq_manage",
+          "name": "FAQ verwalten",
+          "description": "Erstelle oder aktualisiere FAQ-Eintraege basierend auf haeufigen Fragen",
+          "category": "support",
+          "parameters": {
+            "action": {"type": "string", "enum": ["create", "update", "search", "list"], "required": true},
+            "question": {"type": "string", "required": false},
+            "answer": {"type": "string", "required": false},
+            "category": {"type": "string", "required": false}
+          }
+        },
+        {
+          "id": "felix.feedback_analyze",
+          "name": "Feedback Analyse",
+          "description": "Analysiere Kundenfeedback und extrahiere Insights",
+          "category": "customer_success",
+          "parameters": {
+            "source": {"type": "string", "enum": ["tickets", "surveys", "reviews", "social", "all"], "default": "all"},
+            "period": {"type": "string", "default": "month"}
+          }
+        },
+        {
+          "id": "felix.email_template",
+          "name": "Email Template",
+          "description": "Erstelle personalisierte Email-Templates fuer Kundenszenarien",
+          "category": "support",
+          "parameters": {
+            "scenario": {"type": "string", "enum": ["welcome", "followup", "resolution", "renewal", "upsell", "win_back"], "required": true},
+            "customer_name": {"type": "string", "required": false},
+            "context": {"type": "string", "required": false}
+          }
+        },
+        {
+          "id": "felix.escalation_handle",
+          "name": "Eskalation behandeln",
+          "description": "Bearbeite eine Kunden-Eskalation professionell",
+          "category": "support",
+          "parameters": {
+            "customer": {"type": "string", "required": true},
+            "issue": {"type": "string", "required": true},
+            "severity": {"type": "string", "enum": ["medium", "high", "critical"], "required": true},
+            "history": {"type": "string", "required": false}
+          }
+        }
+      ]
+    },
+
+    "andreas": {
+      "name": "ANDREAS",
+      "role": "Head of Growth",
+      "skills": [
+        {
+          "id": "andreas.growth_experiment",
+          "name": "Growth Experiment",
+          "description": "Plane und tracke ein Growth-Experiment (A/B Test, Feature Launch)",
+          "category": "growth",
+          "parameters": {
+            "action": {"type": "string", "enum": ["plan", "start", "analyze", "report"], "required": true},
+            "hypothesis": {"type": "string", "required": true},
+            "metric": {"type": "string", "required": true, "description": "Primaere Metrik"},
+            "duration_days": {"type": "integer", "default": 14}
+          }
+        },
+        {
+          "id": "andreas.funnel_analysis",
+          "name": "Funnel Analyse",
+          "description": "Analysiere den Conversion-Funnel und finde Drop-Off-Punkte",
+          "category": "analytics",
+          "parameters": {
+            "funnel": {"type": "string", "enum": ["acquisition", "activation", "retention", "revenue", "referral", "full"], "default": "full"},
+            "period": {"type": "string", "default": "month"}
+          }
+        },
+        {
+          "id": "andreas.market_research",
+          "name": "Marktforschung",
+          "description": "Recherchiere einen Markt, Trends oder Zielgruppe",
+          "category": "research",
+          "parameters": {
+            "topic": {"type": "string", "required": true},
+            "focus": {"type": "string", "enum": ["market_size", "competitors", "trends", "target_audience", "pricing"], "required": true},
+            "region": {"type": "string", "default": "DACH"}
+          }
+        },
+        {
+          "id": "andreas.partnership_research",
+          "name": "Partner Recherche",
+          "description": "Finde und bewerte potenzielle Partner oder Kooperationen",
+          "category": "growth",
+          "parameters": {
+            "industry": {"type": "string", "required": true},
+            "type": {"type": "string", "enum": ["technology", "distribution", "content", "affiliate", "strategic"], "required": true},
+            "criteria": {"type": "string", "required": false}
+          }
+        },
+        {
+          "id": "andreas.cohort_analysis",
+          "name": "Kohorten Analyse",
+          "description": "Analysiere Nutzer-Kohorten nach Registrierungsdatum oder Segment",
+          "category": "analytics",
+          "parameters": {
+            "segment_by": {"type": "string", "enum": ["signup_date", "plan", "source", "industry"], "required": true},
+            "metric": {"type": "string", "enum": ["retention", "revenue", "engagement", "ltv"], "required": true}
+          }
+        },
+        {
+          "id": "andreas.pricing_analysis",
+          "name": "Pricing Analyse",
+          "description": "Analysiere und optimiere die Preisgestaltung",
+          "category": "growth",
+          "parameters": {
+            "current_pricing": {"type": "object", "required": false},
+            "competitors": {"type": "array", "items": "string", "required": false},
+            "goal": {"type": "string", "enum": ["maximize_revenue", "maximize_adoption", "competitive"], "default": "maximize_revenue"}
+          }
+        },
+        {
+          "id": "andreas.referral_program",
+          "name": "Referral Programm",
+          "description": "Erstelle oder optimiere ein Empfehlungsprogramm",
+          "category": "growth",
+          "parameters": {
+            "action": {"type": "string", "enum": ["create", "analyze", "optimize"], "required": true},
+            "incentive_type": {"type": "string", "enum": ["discount", "credit", "feature", "cash"], "required": false}
+          }
+        },
+        {
+          "id": "andreas.channel_performance",
+          "name": "Kanal Performance",
+          "description": "Vergleiche die Performance verschiedener Akquise-Kanaele",
+          "category": "analytics",
+          "parameters": {
+            "channels": {"type": "array", "items": "string", "required": false, "description": "organic, paid, social, email, referral, direct"},
+            "metric": {"type": "string", "enum": ["cac", "ltv", "conversion", "traffic", "all"], "default": "all"},
+            "period": {"type": "string", "default": "month"}
+          }
+        },
+        {
+          "id": "andreas.growth_report",
+          "name": "Growth Report",
+          "description": "Erstelle einen umfassenden Growth-Report",
+          "category": "reporting",
+          "parameters": {
+            "period": {"type": "string", "default": "month"},
+            "include_forecast": {"type": "boolean", "default": true}
+          }
+        }
+      ]
+    }
+  },
+
+  "shared_skills": {
+    "_comment": "Skills die alle Agenten nutzen koennen",
+    "skills": [
+      {
+        "id": "shared.web_search",
+        "name": "Web Suche",
+        "description": "Suche im Internet nach aktuellen Informationen",
+        "category": "research",
+        "parameters": {
+          "query": {"type": "string", "required": true},
+          "max_results": {"type": "integer", "default": 5},
+          "language": {"type": "string", "default": "de"}
+        }
+      },
+      {
+        "id": "shared.web_scrape",
+        "name": "Webseite lesen",
+        "description": "Lese und extrahiere Inhalte von einer Webseite",
+        "category": "research",
+        "parameters": {
+          "url": {"type": "string", "required": true},
+          "extract": {"type": "string", "enum": ["text", "links", "images", "structured", "all"], "default": "text"}
+        }
+      },
+      {
+        "id": "shared.memory_store",
+        "name": "Merken",
+        "description": "Speichere eine Information im Langzeitgedaechtnis",
+        "category": "memory",
+        "parameters": {
+          "content": {"type": "string", "required": true},
+          "category": {"type": "string", "default": "fact"},
+          "importance": {"type": "integer", "min": 1, "max": 10, "default": 5}
+        }
+      },
+      {
+        "id": "shared.memory_recall",
+        "name": "Erinnern",
+        "description": "Rufe gespeicherte Informationen ab",
+        "category": "memory",
+        "parameters": {
+          "query": {"type": "string", "required": true},
+          "limit": {"type": "integer", "default": 5}
+        }
+      },
+      {
+        "id": "shared.task_create",
+        "name": "Task erstellen",
+        "description": "Erstelle einen neuen Task und delegiere ihn",
+        "category": "task_management",
+        "parameters": {
+          "title": {"type": "string", "required": true},
+          "description": {"type": "string", "required": true},
+          "assigned_to": {"type": "string", "required": false},
+          "priority": {"type": "string", "enum": ["critical", "high", "normal", "low"], "default": "normal"},
+          "deadline": {"type": "string", "required": false}
+        }
+      },
+      {
+        "id": "shared.telegram_send",
+        "name": "Telegram Nachricht",
+        "description": "Sende eine Nachricht via Telegram",
+        "category": "communication",
+        "parameters": {
+          "message": {"type": "string", "required": true},
+          "target": {"type": "string", "enum": ["dom", "team"], "default": "dom"}
+        }
+      },
+      {
+        "id": "shared.n8n_trigger",
+        "name": "Workflow starten",
+        "description": "Starte einen N8N Automation Workflow",
+        "category": "automation",
+        "requires_service": "n8n",
+        "parameters": {
+          "workflow_id": {"type": "string", "required": true},
+          "payload": {"type": "object", "required": false}
+        }
+      },
+      {
+        "id": "shared.file_analyze",
+        "name": "Datei analysieren",
+        "description": "Analysiere eine beliebige Datei mit KI (PDF, Bild, Code, Tabelle)",
+        "category": "files",
+        "parameters": {
+          "file_path": {"type": "string", "required": true},
+          "analysis_type": {"type": "string", "enum": ["summary", "extract", "review"], "default": "summary"}
+        }
+      },
+      {
+        "id": "shared.voice_notify",
+        "name": "Sprach-Benachrichtigung",
+        "description": "Sende eine gesprochene Benachrichtigung per Telegram",
+        "category": "voice",
+        "parameters": {
+          "message": {"type": "string", "required": true},
+          "urgent": {"type": "boolean", "default": false}
+        }
+      },
+      {
+        "id": "shared.learning_store",
+        "name": "Learning speichern",
+        "description": "Speichere ein Learning oder Pattern fuer zukuenftige Verbesserung",
+        "category": "intelligence",
+        "parameters": {
+          "learning": {"type": "string", "required": true},
+          "category": {"type": "string", "enum": ["pattern", "mistake", "success", "optimization"], "required": true},
+          "source_agent": {"type": "string", "required": false}
+        }
+      }
+    ]
+  },
+
+  "required_services": {
+    "postiz": {
+      "name": "Postiz",
+      "description": "Social Media Management — post, schedule, analytics",
+      "docker_image": "ghcr.io/gitroomhq/postiz-app",
+      "default_port": 4200,
+      "check_endpoint": "/api/health",
+      "install_url": "https://postiz.com",
+      "required_for": ["steve.social_post", "steve.social_analytics"]
+    },
+    "n8n": {
+      "name": "N8N",
+      "description": "Workflow Automation — triggers, webhooks, integrations",
+      "docker_image": "n8nio/n8n",
+      "default_port": 5678,
+      "check_endpoint": "/healthz",
+      "required_for": ["jarvis.workflow_trigger", "shared.n8n_trigger"]
+    },
+    "openclaw": {
+      "name": "OpenClaw",
+      "description": "AI Agent Platform — agent orchestration + skill execution",
+      "docker_image": "openclaw/openclaw",
+      "default_port": 8080,
+      "check_endpoint": "/api/health",
+      "required_for": ["core"]
+    },
+    "hubspot": {
+      "name": "HubSpot CRM",
+      "description": "CRM — contacts, deals, pipeline",
+      "type": "api",
+      "env_key": "HUBSPOT_API_KEY",
+      "required_for": ["donald.pipeline_status", "donald.crm_contact", "donald.deal_create"]
+    },
+    "ollama": {
+      "name": "Ollama",
+      "description": "Lokale LLMs — kostenlose AI-Verarbeitung",
+      "docker_image": "ollama/ollama",
+      "default_port": 11434,
+      "check_endpoint": "/api/tags",
+      "required_for": ["cron_jobs", "smart_router_tier2", "heartbeat", "proactive"]
+    },
+    "elevenlabs": {
+      "name": "ElevenLabs",
+      "description": "Premium TTS — natuerliche Sprachausgabe",
+      "type": "api",
+      "env_key": "ELEVENLABS_API_KEY",
+      "required_for": ["jarvis.voice_reply", "donna.voice_memo"],
+      "fallback": "edge-tts (kostenlos)"
+    }
+  }
+}

@@ -1,0 +1,1692 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JARVIS 1.5 — Mission Control</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ── RESET & BASE ──────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #0A0B0E;
+      --bg-surface: #111115;
+      --bg-elevated: #18181D;
+      --bg-hover: #1E1E24;
+      --border: #27272A;
+      --border-light: #3F3F46;
+      --text-primary: #F2F2F2;
+      --text-secondary: #A1A1AA;
+      --text-dim: #71717A;
+      --accent: #3B82F6;
+      --accent-hover: #2563EB;
+      --success: #22C55E;
+      --warning: #F59E0B;
+      --error: #EF4444;
+      --purple: #8B5CF6;
+      --cyan: #06B6D4;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── LAYOUT ────────────────────────────────────────── */
+    .app {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      grid-template-rows: 64px 1fr;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ────────────────────────────────────────── */
+    .header {
+      grid-column: 1 / -1;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 10;
+    }
+
+    .header-left { display: flex; align-items: center; gap: 16px; }
+
+    .logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+    .logo span { color: var(--accent); }
+
+    .version-badge {
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 4px;
+      color: var(--text-dim);
+    }
+
+    .header-right { display: flex; align-items: center; gap: 16px; }
+
+    .status-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--success);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+    .status-text { font-size: 13px; color: var(--text-secondary); }
+
+    /* ── SIDEBAR ───────────────────────────────────────── */
+    .sidebar {
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border);
+      padding: 16px 0;
+      overflow-y: auto;
+    }
+
+    .sidebar-section { padding: 8px 16px; margin-bottom: 8px; }
+
+    .sidebar-title {
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--text-dim); margin-bottom: 8px;
+    }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 16px; cursor: pointer; border-radius: var(--radius-sm);
+      margin: 2px 8px; transition: all 0.15s; font-size: 14px;
+      color: var(--text-secondary);
+    }
+    .nav-item:hover { background: var(--bg-hover); color: var(--text-primary); }
+    .nav-item.active { background: var(--bg-elevated); color: var(--text-primary); border: 1px solid var(--border); }
+    .nav-item .emoji { font-size: 16px; width: 20px; text-align: center; }
+
+    /* ── MAIN CONTENT ──────────────────────────────────── */
+    .main { padding: 24px; overflow-y: auto; }
+
+    .page-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px; font-weight: 600; margin-bottom: 24px;
+    }
+
+    .page-subtitle {
+      font-size: 14px; color: var(--text-dim); margin: -16px 0 24px;
+    }
+
+    /* ── CARDS ──────────────────────────────────────────── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px; margin-bottom: 24px;
+    }
+
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px; transition: all 0.2s;
+    }
+    .card:hover { border-color: var(--border-light); transform: translateY(-1px); }
+
+    .card-header {
+      display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 12px;
+    }
+    .card-title { font-size: 14px; font-weight: 500; color: var(--text-secondary); }
+    .card-value { font-size: 32px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+    .card-subtitle { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+
+    .stat-blue .card-value { color: var(--accent); }
+    .stat-green .card-value { color: var(--success); }
+    .stat-purple .card-value { color: var(--purple); }
+    .stat-cyan .card-value { color: var(--cyan); }
+    .stat-warning .card-value { color: var(--warning); }
+    .stat-error .card-value { color: var(--error); }
+
+    /* ── AGENT CARDS ───────────────────────────────────── */
+    .agent-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    .agent-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px; transition: all 0.2s; cursor: pointer;
+    }
+    .agent-card:hover { border-color: var(--accent); }
+
+    .agent-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+
+    .agent-emoji {
+      font-size: 28px; width: 48px; height: 48px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--bg-elevated); border-radius: var(--radius-sm);
+    }
+    .agent-name { font-size: 18px; font-weight: 600; }
+    .agent-role { font-size: 13px; color: var(--text-secondary); }
+    .agent-meta { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+
+    .agent-tag {
+      font-size: 11px; font-family: 'JetBrains Mono', monospace;
+      background: var(--bg-elevated); border: 1px solid var(--border);
+      padding: 2px 8px; border-radius: 4px; color: var(--text-dim);
+    }
+
+    .agent-status { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; }
+    .agent-status.active { color: var(--success); }
+    .agent-status.standby { color: var(--warning); }
+    .agent-status.disabled { color: var(--error); }
+
+    /* ── CHAT ──────────────────────────────────────────── */
+    .chat-container {
+      display: flex; flex-direction: column;
+      height: calc(100vh - 64px - 48px); max-height: 800px;
+    }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 16px 0; }
+    .chat-message { display: flex; gap: 12px; padding: 12px 0; }
+
+    .chat-avatar {
+      width: 36px; height: 36px; border-radius: var(--radius-sm);
+      background: var(--bg-elevated); display: flex; align-items: center;
+      justify-content: center; font-size: 18px; flex-shrink: 0;
+    }
+    .chat-content { flex: 1; }
+    .chat-sender { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+    .chat-text { font-size: 14px; line-height: 1.6; color: var(--text-secondary); }
+    .chat-time { font-size: 11px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+
+    .chat-input-area {
+      display: flex; gap: 8px; padding: 16px 0;
+      border-top: 1px solid var(--border);
+    }
+    .chat-input {
+      flex: 1; background: var(--bg-surface); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 12px 16px;
+      color: var(--text-primary); font-family: 'Inter', sans-serif;
+      font-size: 14px; outline: none; transition: border-color 0.2s;
+    }
+    .chat-input:focus { border-color: var(--accent); }
+    .chat-input::placeholder { color: var(--text-dim); }
+
+    /* ── BUTTONS ────────────────────────────────────────── */
+    .btn {
+      border: none; border-radius: var(--radius-sm); padding: 10px 20px;
+      font-weight: 500; cursor: pointer; transition: all 0.2s;
+      font-size: 14px; font-family: 'Inter', sans-serif;
+    }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:hover { opacity: 0.9; }
+    .btn-warning { background: var(--warning); color: #000; }
+    .btn-warning:hover { opacity: 0.9; }
+    .btn-danger { background: var(--error); color: white; }
+    .btn-danger:hover { opacity: 0.9; }
+    .btn-ghost {
+      background: transparent; color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { background: var(--bg-hover); color: var(--text-primary); }
+    .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+    .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    /* ── TABLE ──────────────────────────────────────────── */
+    .table-container {
+      background: var(--bg-surface); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+
+    th {
+      text-align: left; padding: 12px 16px; font-size: 12px;
+      font-weight: 600; color: var(--text-dim); text-transform: uppercase;
+      letter-spacing: 0.5px; border-bottom: 1px solid var(--border);
+      background: var(--bg-elevated);
+    }
+    td {
+      padding: 12px 16px; font-size: 14px;
+      border-bottom: 1px solid var(--border); color: var(--text-secondary);
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--bg-hover); }
+
+    .badge {
+      display: inline-block; font-size: 11px; font-weight: 500;
+      padding: 2px 8px; border-radius: 4px;
+    }
+    .badge-success { background: rgba(34, 197, 94, 0.15); color: var(--success); }
+    .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+    .badge-error { background: rgba(239, 68, 68, 0.15); color: var(--error); }
+    .badge-info { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+    .badge-purple { background: rgba(139, 92, 246, 0.15); color: var(--purple); }
+
+    /* ── MODAL ──────────────────────────────────────────── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 50; opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    }
+    .modal-overlay.show { opacity: 1; pointer-events: all; }
+
+    .modal {
+      background: var(--bg-surface); border: 1px solid var(--border);
+      border-radius: var(--radius); width: 90%; max-width: 700px;
+      max-height: 85vh; overflow-y: auto; padding: 32px;
+    }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .modal-title { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; }
+    .modal-close {
+      background: none; border: none; color: var(--text-dim);
+      font-size: 24px; cursor: pointer; padding: 4px 8px;
+    }
+    .modal-close:hover { color: var(--text-primary); }
+
+    /* ── FORMS ──────────────────────────────────────────── */
+    .form-group { margin-bottom: 16px; }
+    .form-label {
+      display: block; font-size: 13px; font-weight: 500;
+      color: var(--text-secondary); margin-bottom: 6px;
+    }
+    .form-input, .form-select, .form-textarea {
+      width: 100%; background: var(--bg-elevated); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 10px 14px;
+      color: var(--text-primary); font-family: 'Inter', sans-serif;
+      font-size: 14px; outline: none; transition: border-color 0.2s;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+    .form-textarea { min-height: 120px; resize: vertical; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+    .form-select { cursor: pointer; }
+    .form-select option { background: var(--bg-elevated); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-hint { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+
+    /* ── SERVICE STATUS ────────────────────────────────── */
+    .service-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px; margin-bottom: 24px;
+    }
+    .service-card {
+      background: var(--bg-surface); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 16px;
+    }
+    .service-name {
+      font-size: 13px; font-weight: 600; margin-bottom: 8px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .service-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+    .service-dot.ok { background: var(--success); }
+    .service-dot.error { background: var(--error); }
+    .service-dot.unreachable { background: var(--warning); }
+    .service-dot.disabled { background: var(--text-dim); }
+    .service-detail { font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+
+    /* ── LOGIN ──────────────────────────────────────────── */
+    .login-overlay {
+      position: fixed; inset: 0; background: var(--bg-primary);
+      display: flex; align-items: center; justify-content: center; z-index: 100;
+    }
+    .login-box {
+      background: var(--bg-surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 48px; width: 400px; text-align: center;
+    }
+    .login-logo { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 700; margin-bottom: 8px; }
+    .login-subtitle { color: var(--text-dim); font-size: 14px; margin-bottom: 32px; }
+    .login-input {
+      width: 100%; background: var(--bg-elevated); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 14px 16px;
+      color: var(--text-primary); font-family: 'JetBrains Mono', monospace;
+      font-size: 14px; outline: none; margin-bottom: 16px;
+      text-align: center; letter-spacing: 2px;
+    }
+    .login-input:focus { border-color: var(--accent); }
+    .login-btn {
+      width: 100%; background: var(--accent); border: none;
+      border-radius: var(--radius-sm); padding: 14px; color: white;
+      font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s;
+    }
+    .login-btn:hover { background: var(--accent-hover); }
+    .login-error { color: var(--error); font-size: 13px; margin-top: 12px; display: none; }
+
+    /* ── SCROLLBAR ──────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--border-light); }
+
+    /* ── INPUTS ────────────────────────────────────────── */
+    .input, select.input {
+      width: 100%; background: var(--bg-elevated); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 10px 14px;
+      color: var(--text-primary); font-family: 'JetBrains Mono', monospace;
+      font-size: 13px; outline: none;
+    }
+    .input:focus { border-color: var(--accent); }
+    select.input { cursor: pointer; }
+
+    /* ── TOAST ──────────────────────────────────────────── */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px; z-index: 200;
+      background: var(--bg-elevated); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 14px 20px;
+      font-size: 14px; color: var(--text-primary);
+      transform: translateY(100px); opacity: 0; transition: all 0.3s;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.toast-success { border-color: var(--success); }
+    .toast.toast-error { border-color: var(--error); }
+
+    /* ── RESPONSIVE ────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .card-grid { grid-template-columns: 1fr; }
+      .agent-grid { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+
+    /* ── EMPTY STATE ───────────────────────────────────── */
+    .empty-state {
+      text-align: center; padding: 60px 20px; color: var(--text-dim);
+    }
+    .empty-state-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
+    .empty-state-text { font-size: 15px; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <!-- LOGIN -->
+  <div class="login-overlay" id="loginOverlay">
+    <div class="login-box">
+      <div class="login-logo">JARVIS <span style="color: #3B82F6">1.5</span></div>
+      <div class="login-subtitle">Mission Control Dashboard</div>
+      <input type="password" class="login-input" id="loginPassword" placeholder="Dashboard Password" autocomplete="off">
+      <button class="login-btn" onclick="login()">Zugang</button>
+      <div class="login-error" id="loginError">Falsches Passwort</div>
+      <p style="color: var(--text-dim); font-size: 11px; margin-top: 24px;">SYSTEMS &trade; &middot; architectofscale.com</p>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div class="app" id="app" style="display: none;">
+    <!-- HEADER -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo">JARVIS <span>1.5</span></div>
+        <div class="version-badge">v1.5.0</div>
+      </div>
+      <div class="header-right">
+        <div class="status-dot" id="statusDot"></div>
+        <span class="status-text" id="statusText">Verbunden</span>
+      </div>
+    </header>
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">Command Center</div>
+      </div>
+      <div class="nav-item active" data-page="dashboard" onclick="showPage('dashboard')">
+        <span class="emoji">&#x1F4CA;</span> Dashboard
+      </div>
+      <div class="nav-item" data-page="chat" onclick="showPage('chat')">
+        <span class="emoji">&#x1F4AC;</span> Chat
+      </div>
+      <div class="nav-item" data-page="tasks" onclick="showPage('tasks')">
+        <span class="emoji">&#x2705;</span> Tasks
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">Team</div>
+      </div>
+      <div class="nav-item" data-page="agents" onclick="showPage('agents')">
+        <span class="emoji">&#x1F916;</span> Agents
+      </div>
+      <div class="nav-item" data-page="skills" onclick="showPage('skills')">
+        <span class="emoji">&#x26A1;</span> Skills
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">Intelligence</div>
+      </div>
+      <div class="nav-item" data-page="memory" onclick="showPage('memory')">
+        <span class="emoji">&#x1F9E0;</span> Memory
+      </div>
+      <div class="nav-item" data-page="learning" onclick="showPage('learning')">
+        <span class="emoji">&#x1F4D6;</span> Learning
+      </div>
+      <div class="nav-item" data-page="conversations" onclick="showPage('conversations')">
+        <span class="emoji">&#x1F4DD;</span> Conversations
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">Wearable</div>
+      </div>
+      <div class="nav-item" data-page="omi" onclick="showPage('omi')">
+        <span class="emoji">&#x1F3A4;</span> OMI Device
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">System</div>
+      </div>
+      <div class="nav-item" data-page="services" onclick="showPage('services')">
+        <span class="emoji">&#x1F5A5;&#xFE0F;</span> Services
+      </div>
+      <div class="nav-item" data-page="onboarding" onclick="showPage('onboarding')">
+        <span class="emoji">&#x1F680;</span> Setup Wizard
+      </div>
+      <div class="nav-item" data-page="settings" onclick="showPage('settings')">
+        <span class="emoji">&#x2699;&#xFE0F;</span> Settings
+      </div>
+    </nav>
+
+    <!-- MAIN -->
+    <main class="main" id="mainContent"></main>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal" id="modalContent"></div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ═══════════════════════════════════════════════════════
+    // JARVIS 1.5 — Mission Control Frontend
+    // ═══════════════════════════════════════════════════════
+
+    // ── STATE ────────────────────────────────────────────
+    let token = localStorage.getItem('jarvis_token');
+    let ws = null;
+    let currentPage = 'dashboard';
+
+    const AGENT_EMOJIS = {
+      jarvis: '&#x1F9E0;', elon: '&#x1F4CA;', steve: '&#x1F4E2;', donald: '&#x1F4B0;',
+      archi: '&#x1F6E0;', donna: '&#x1F4CB;', iris: '&#x1F3A8;',
+      satoshi: '&#x20BF;', felix: '&#x1F91D;', andreas: '&#x1F3AF;'
+    };
+
+    const AGENT_DEFAULTS = [
+      { slug:'jarvis', emoji:'&#x1F9E0;', name:'JARVIS', role:'Chief Intelligence Operator', tier:1, model:'tier0-kimi', team:'command', status:'active' },
+      { slug:'elon', emoji:'&#x1F4CA;', name:'ELON', role:'Analyst & Systemoptimierer', tier:1, model:'tier1-sonnet', team:'intelligence', status:'active' },
+      { slug:'steve', emoji:'&#x1F4E2;', name:'STEVE', role:'Marketing & Content Lead', tier:2, model:'tier1-sonnet', team:'marketing', status:'active' },
+      { slug:'donald', emoji:'&#x1F4B0;', name:'DONALD', role:'Sales & Revenue Lead', tier:2, model:'tier1-sonnet', team:'sales', status:'active' },
+      { slug:'archi', emoji:'&#x1F6E0;', name:'ARCHI', role:'Dev & Infrastructure Lead', tier:2, model:'tier1-sonnet', team:'development', status:'active' },
+      { slug:'donna', emoji:'&#x1F4CB;', name:'DONNA', role:'Backoffice & Operations Lead', tier:2, model:'tier1-haiku', team:'operations', status:'active' },
+      { slug:'iris', emoji:'&#x1F3A8;', name:'IRIS', role:'Design & Creative Lead', tier:2, model:'tier1-sonnet', team:'marketing', status:'active' },
+      { slug:'satoshi', emoji:'&#x20BF;', name:'SATOSHI', role:'Crypto & Trading Specialist', tier:2, model:'tier1-sonnet', team:'crypto', status:'standby' },
+      { slug:'felix', emoji:'&#x1F91D;', name:'FELIX', role:'Customer Success Lead', tier:2, model:'tier1-haiku', team:'customer-success', status:'active' },
+      { slug:'andreas', emoji:'&#x1F3AF;', name:'ANDREAS', role:'Customer Success SFE', tier:3, model:'tier1-haiku', team:'customer-success', status:'active' }
+    ];
+
+    // ── INIT ─────────────────────────────────────────────
+    if (token) {
+      document.getElementById('loginOverlay').style.display = 'none';
+      document.getElementById('app').style.display = 'grid';
+      initApp();
+    }
+
+    document.getElementById('loginPassword').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') login();
+    });
+
+    // ── AUTH ─────────────────────────────────────────────
+    async function login() {
+      const password = document.getElementById('loginPassword').value;
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          token = data.token;
+          localStorage.setItem('jarvis_token', token);
+          document.getElementById('loginOverlay').style.display = 'none';
+          document.getElementById('app').style.display = 'grid';
+          initApp();
+        } else {
+          document.getElementById('loginError').style.display = 'block';
+        }
+      } catch {
+        document.getElementById('loginError').textContent = 'Verbindungsfehler';
+        document.getElementById('loginError').style.display = 'block';
+      }
+    }
+
+    function initApp() { connectWS(); showPage('dashboard'); }
+
+    // ── WEBSOCKET ────────────────────────────────────────
+    function connectWS() {
+      const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+      ws = new WebSocket(`${protocol}//${location.host}/ws`);
+      ws.onopen = () => {
+        document.getElementById('statusText').textContent = 'Verbunden';
+        document.getElementById('statusDot').style.background = 'var(--success)';
+      };
+      ws.onclose = () => {
+        document.getElementById('statusText').textContent = 'Getrennt';
+        document.getElementById('statusDot').style.background = 'var(--error)';
+        setTimeout(connectWS, 3000);
+      };
+      ws.onmessage = (event) => handleWSMessage(JSON.parse(event.data));
+    }
+
+    function handleWSMessage(data) {
+      if (data.type === 'chat' && currentPage === 'chat') appendChatMessage(data);
+      if (data.type === 'task_created' && currentPage === 'dashboard') showPage('dashboard');
+      if (data.type === 'agent_updated' && currentPage === 'agents') showPage('agents');
+    }
+
+    // ── API HELPER ───────────────────────────────────────
+    async function api(path, options = {}) {
+      const res = await fetch(path, {
+        ...options,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          ...options.headers,
+        },
+        body: options.body ? JSON.stringify(options.body) : undefined,
+      });
+      return res.json();
+    }
+
+    // ── NAVIGATION ───────────────────────────────────────
+    function showPage(page) {
+      currentPage = page;
+      document.querySelectorAll('.nav-item').forEach(el => {
+        el.classList.toggle('active', el.dataset.page === page);
+      });
+      const pages = {
+        dashboard: renderDashboard, chat: renderChat, agents: renderAgents,
+        tasks: renderTasks, skills: renderSkills, memory: renderMemory,
+        learning: renderLearning, conversations: renderConversations,
+        omi: renderOMI, services: renderServices, onboarding: renderOnboarding,
+        settings: renderSettings
+      };
+      if (pages[page]) pages[page]();
+    }
+
+    // ── TOAST ────────────────────────────────────────────
+    function showToast(msg, type = 'success') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = `toast toast-${type} show`;
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // ── MODAL ────────────────────────────────────────────
+    function openModal(html) {
+      document.getElementById('modalContent').innerHTML = html;
+      document.getElementById('modalOverlay').classList.add('show');
+    }
+    function closeModal() {
+      document.getElementById('modalOverlay').classList.remove('show');
+    }
+
+    // ════════════════════════════════════════════════════
+    // DASHBOARD
+    // ════════════════════════════════════════════════════
+    async function renderDashboard() {
+      const main = document.getElementById('mainContent');
+      main.innerHTML = `
+        <div class="page-title">Mission Control</div>
+        <div class="card-grid" id="statsGrid">Lade...</div>
+        <div style="margin-top:24px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <div class="page-title" style="font-size:20px;margin-bottom:0">Agent Team</div>
+            <button class="btn btn-ghost btn-sm" onclick="showPage('agents')">Alle verwalten</button>
+          </div>
+          <div class="agent-grid" id="agentGrid">Lade...</div>
+        </div>`;
+
+      try {
+        const [stats, agents] = await Promise.all([api('/api/stats'), api('/api/agents')]);
+        const agentList = agents.length ? agents : AGENT_DEFAULTS;
+
+        document.getElementById('statsGrid').innerHTML = `
+          <div class="card stat-blue"><div class="card-header"><span class="card-title">Agents</span></div>
+            <div class="card-value">${stats.agents?.active || agentList.filter(a=>a.status==='active').length}</div>
+            <div class="card-subtitle">aktiv</div></div>
+          <div class="card stat-green"><div class="card-header"><span class="card-title">Tasks</span></div>
+            <div class="card-value">${stats.tasks?.total || 0}</div>
+            <div class="card-subtitle">${stats.tasks?.completed || 0} abgeschlossen</div></div>
+          <div class="card stat-purple"><div class="card-header"><span class="card-title">Learnings</span></div>
+            <div class="card-value">${stats.learnings || 0}</div>
+            <div class="card-subtitle">Self-Improvement Eintraege</div></div>
+          <div class="card stat-cyan"><div class="card-header"><span class="card-title">Conversations</span></div>
+            <div class="card-value">${stats.conversations || 0}</div>
+            <div class="card-subtitle">gespeichert</div></div>
+          <div class="card stat-warning"><div class="card-header"><span class="card-title">Skills</span></div>
+            <div class="card-value">${stats.skills?.enabled || 0}</div>
+            <div class="card-subtitle">von ${stats.skills?.total || 0} aktiviert</div></div>
+          <div class="card stat-blue"><div class="card-header"><span class="card-title">Tokens</span></div>
+            <div class="card-value">${Number(stats.tasks?.total_tokens || 0).toLocaleString()}</div>
+            <div class="card-subtitle">${((stats.tasks?.total_cost || 0) / 100).toFixed(2)} EUR Kosten</div></div>`;
+
+        document.getElementById('agentGrid').innerHTML = agentList.map(a => agentCardHTML(a)).join('');
+      } catch {
+        document.getElementById('statsGrid').innerHTML = '<div class="card"><p style="color:var(--text-dim)">Dashboard wird geladen sobald die Datenbank verbunden ist.</p></div>';
+        document.getElementById('agentGrid').innerHTML = AGENT_DEFAULTS.map(a => agentCardHTML(a)).join('');
+      }
+    }
+
+    function agentCardHTML(a) {
+      const emoji = a.emoji || AGENT_EMOJIS[a.slug] || '&#x1F916;';
+      return `
+        <div class="agent-card" onclick="openAgentDetail('${a.slug}')">
+          <div class="agent-header">
+            <div class="agent-emoji">${emoji}</div>
+            <div>
+              <div class="agent-name">${esc(a.name)}</div>
+              <div class="agent-role">${esc(a.role)}</div>
+            </div>
+          </div>
+          <div class="agent-meta">
+            <span class="agent-tag">Tier ${a.tier}</span>
+            <span class="agent-tag">${a.model}</span>
+            <span class="agent-tag">${a.team}</span>
+            <span class="agent-status ${a.status}">&#x25CF; ${a.status}</span>
+          </div>
+        </div>`;
+    }
+
+    // ════════════════════════════════════════════════════
+    // AGENTS — Full Management
+    // ════════════════════════════════════════════════════
+    async function renderAgents() {
+      const main = document.getElementById('mainContent');
+      main.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div class="page-title" style="margin-bottom:4px">Agent Management</div>
+            <div class="page-subtitle">Agents konfigurieren und zu OpenClaw synchronisieren</div>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-ghost btn-sm" onclick="syncAllAgents()">Alle zu OpenClaw sync</button>
+          </div>
+        </div>
+        <div class="agent-grid" id="agentGrid">Lade...</div>`;
+
+      try {
+        const agents = await api('/api/agents');
+        const agentList = agents.length ? agents : AGENT_DEFAULTS;
+        document.getElementById('agentGrid').innerHTML = agentList.map(a => agentCardHTML(a)).join('');
+      } catch {
+        document.getElementById('agentGrid').innerHTML = AGENT_DEFAULTS.map(a => agentCardHTML(a)).join('');
+      }
+    }
+
+    async function openAgentDetail(slug) {
+      let agent;
+      try {
+        agent = await api(`/api/agents/${slug}`);
+        if (agent.error) throw new Error();
+      } catch {
+        agent = AGENT_DEFAULTS.find(a => a.slug === slug) || { slug, name: slug.toUpperCase(), role: '', model: 'tier1-sonnet', tier: 2, team: '', status: 'active' };
+      }
+
+      let stats = { tasks: { total: 0, completed: 0 }, learning: { total: 0 }, conversations: { conversations: 0 } };
+      try { stats = await api(`/api/agents/${slug}/stats`); } catch {}
+
+      const emoji = agent.emoji || AGENT_EMOJIS[slug] || '&#x1F916;';
+
+      openModal(`
+        <div class="modal-header">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div class="agent-emoji" style="font-size:32px;width:56px;height:56px">${emoji}</div>
+            <div>
+              <div class="modal-title">${esc(agent.name)}</div>
+              <div style="color:var(--text-dim);font-size:13px">${esc(agent.role)}</div>
+            </div>
+          </div>
+          <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+
+        <div class="card-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px">
+          <div class="card stat-blue"><div class="card-title">Tasks</div><div class="card-value" style="font-size:24px">${stats.tasks?.total || 0}</div></div>
+          <div class="card stat-green"><div class="card-title">Learnings</div><div class="card-value" style="font-size:24px">${stats.learning?.total || 0}</div></div>
+          <div class="card stat-purple"><div class="card-title">Conversations</div><div class="card-value" style="font-size:24px">${stats.conversations?.conversations || 0}</div></div>
+        </div>
+
+        <form onsubmit="saveAgent(event,'${slug}')">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Name</label>
+              <input class="form-input" name="name" value="${esc(agent.name || '')}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Rolle</label>
+              <input class="form-input" name="role" value="${esc(agent.role || '')}">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Model</label>
+              <select class="form-select" name="model">
+                <option value="tier0-kimi" ${agent.model==='tier0-kimi'?'selected':''}>Tier 0 — Kimi (Strategie)</option>
+                <option value="tier1-opus" ${agent.model==='tier1-opus'?'selected':''}>Tier 1 — Claude Opus</option>
+                <option value="tier1-sonnet" ${agent.model==='tier1-sonnet'?'selected':''}>Tier 1 — Claude Sonnet</option>
+                <option value="tier1-haiku" ${agent.model==='tier1-haiku'?'selected':''}>Tier 1 — Claude Haiku</option>
+                <option value="tier2-qwen-coder" ${agent.model==='tier2-qwen-coder'?'selected':''}>Tier 2 — Qwen Coder (lokal)</option>
+                <option value="tier2-llama" ${agent.model==='tier2-llama'?'selected':''}>Tier 2 — Llama 3.1 (lokal)</option>
+                <option value="tier3-groq-fast" ${agent.model==='tier3-groq-fast'?'selected':''}>Tier 3 — Groq (Speed)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Status</label>
+              <select class="form-select" name="status">
+                <option value="active" ${agent.status==='active'?'selected':''}>Active</option>
+                <option value="standby" ${agent.status==='standby'?'selected':''}>Standby</option>
+                <option value="disabled" ${agent.status==='disabled'?'selected':''}>Disabled</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Team</label>
+              <input class="form-input" name="team" value="${esc(agent.team || '')}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tier</label>
+              <select class="form-select" name="tier">
+                <option value="0" ${agent.tier==0?'selected':''}>Tier 0 (Strategie)</option>
+                <option value="1" ${agent.tier==1?'selected':''}>Tier 1 (Qualitaet)</option>
+                <option value="2" ${agent.tier==2?'selected':''}>Tier 2 (Routine)</option>
+                <option value="3" ${agent.tier==3?'selected':''}>Tier 3 (Speed)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Temperature</label>
+              <input class="form-input" name="temperature" type="number" step="0.1" min="0" max="2" value="${agent.temperature || 0.5}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Max Tokens</label>
+              <input class="form-input" name="max_tokens" type="number" step="256" min="256" max="32768" value="${agent.max_tokens || 4096}">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">System Prompt</label>
+            <textarea class="form-textarea" name="system_prompt" style="min-height:200px">${esc(agent.system_prompt || '')}</textarea>
+            <div class="form-hint">Der System Prompt definiert das Verhalten des Agents. Wird mit dem Base-Prompt kombiniert.</div>
+          </div>
+
+          <div style="display:flex;gap:8px;justify-content:space-between;margin-top:24px">
+            <button type="button" class="btn btn-ghost" onclick="syncAgent('${slug}')">Zu OpenClaw sync</button>
+            <div class="btn-group">
+              <button type="button" class="btn btn-ghost" onclick="closeModal()">Abbrechen</button>
+              <button type="submit" class="btn btn-primary">Speichern</button>
+            </div>
+          </div>
+        </form>
+      `);
+    }
+
+    async function saveAgent(event, slug) {
+      event.preventDefault();
+      const form = event.target;
+      const data = {
+        name: form.name.value,
+        role: form.role.value,
+        model: form.model.value,
+        status: form.status.value,
+        team: form.team.value,
+        tier: parseInt(form.tier.value),
+        temperature: parseFloat(form.temperature.value),
+        max_tokens: parseInt(form.max_tokens.value),
+        system_prompt: form.system_prompt.value,
+      };
+
+      try {
+        await api(`/api/agents/${slug}`, { method: 'PUT', body: data });
+        showToast('Agent gespeichert');
+        closeModal();
+        showPage(currentPage);
+      } catch {
+        showToast('Fehler beim Speichern', 'error');
+      }
+    }
+
+    async function syncAgent(slug) {
+      try {
+        const result = await api(`/api/agents/${slug}/sync-openclaw`, { method: 'POST' });
+        showToast(result.synced ? 'Agent zu OpenClaw synchronisiert' : 'OpenClaw nicht erreichbar — lokal gespeichert', result.synced ? 'success' : 'error');
+      } catch {
+        showToast('Sync fehlgeschlagen', 'error');
+      }
+    }
+
+    async function syncAllAgents() {
+      try {
+        const result = await api('/api/agents/sync-all', { method: 'POST' });
+        showToast(`${result.synced}/${result.total} Agents synchronisiert`);
+      } catch {
+        showToast('Sync fehlgeschlagen', 'error');
+      }
+    }
+
+    // ════════════════════════════════════════════════════
+    // CHAT
+    // ════════════════════════════════════════════════════
+    function renderChat() {
+      const main = document.getElementById('mainContent');
+      main.innerHTML = `
+        <div class="page-title">Chat mit JARVIS</div>
+        <div class="chat-container">
+          <div class="chat-messages" id="chatMessages">
+            <div class="chat-message">
+              <div class="chat-avatar">&#x1F9E0;</div>
+              <div class="chat-content">
+                <div class="chat-sender">JARVIS</div>
+                <div class="chat-text">JARVIS 1.5 bereit. Alle 10 Agents aktiv. Wie kann ich helfen?</div>
+                <div class="chat-time">${new Date().toLocaleTimeString('de-DE')}</div>
+              </div>
+            </div>
+          </div>
+          <div class="chat-input-area">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Nachricht an JARVIS... (@agent fuer Delegation)" autocomplete="off">
+            <button class="btn btn-primary" onclick="sendChat()">Senden</button>
+          </div>
+        </div>`;
+      document.getElementById('chatInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendChat();
+      });
+    }
+
+    function sendChat() {
+      const input = document.getElementById('chatInput');
+      const message = input.value.trim();
+      if (!message) return;
+      appendChatMessage({ agent: 'DOM', content: message, timestamp: new Date().toISOString() });
+      input.value = '';
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'chat', content: message }));
+      }
+    }
+
+    function appendChatMessage(data) {
+      const messages = document.getElementById('chatMessages');
+      if (!messages) return;
+      const emoji = data.agent === 'DOM' ? '&#x1F464;' : (AGENT_EMOJIS[data.agent] || '&#x1F916;');
+      const time = data.timestamp ? new Date(data.timestamp).toLocaleTimeString('de-DE') : new Date().toLocaleTimeString('de-DE');
+      messages.innerHTML += `
+        <div class="chat-message">
+          <div class="chat-avatar">${emoji}</div>
+          <div class="chat-content">
+            <div class="chat-sender">${esc(data.agent?.toUpperCase() || 'SYSTEM')}</div>
+            <div class="chat-text">${esc(data.content)}</div>
+            <div class="chat-time">${time}</div>
+          </div>
+        </div>`;
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    // ════════════════════════════════════════════════════
+    // TASKS
+    // ════════════════════════════════════════════════════
+    async function renderTasks() {
+      const main = document.getElementById('mainContent');
+      main.innerHTML = '<div class="page-title">Tasks</div><div class="table-container" id="tasksTable">Lade...</div>';
+      try {
+        const tasks = await api('/api/tasks?limit=50');
+        if (!tasks.length) {
+          document.getElementById('tasksTable').innerHTML = '<div class="empty-state"><div class="empty-state-icon">&#x2705;</div><div class="empty-state-text">Keine Tasks vorhanden</div></div>';
+          return;
+        }
+        document.getElementById('tasksTable').innerHTML = `<table>
+          <thead><tr><th>Task</th><th>Agent</th><th>Status</th><th>Prio</th><th>Tokens</th><th>Erstellt</th></tr></thead>
+          <tbody>${tasks.map(t => `<tr>
+            <td>${esc(t.title)}</td>
+            <td>${t.agent_slug || '-'}</td>
+            <td><span class="badge ${t.status==='completed'?'badge-success':t.status==='pending'?'badge-warning':t.status==='failed'?'badge-error':'badge-info'}">${t.status}</span></td>
+            <td>P${t.priority}</td>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${t.tokens_used ? Number(t.tokens_used).toLocaleString() : '-'}</td>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${t.created_at ? new Date(t.created_at).toLocaleDateString('de-DE') : '-'}</td>
+          </tr>`).join('')}</tbody></table>`;
+      } catch {
+        document.getElementById('tasksTable').innerHTML = '<div class="empty-state"><div class="empty-state-text">Tasks werden geladen sobald die Datenbank verbunden ist.</div></div>';
+      }
+    }
+
+    // ════════════════════════════════════════════════════
+    // SKILLS
+    // ════════════════════════════════════════════════════
+    async function renderSkills() {
+      const main = document.getElementById('mainContent');
+      main.innerHTML = '<div class="page-title">Skills Registry</div><div class="table-container" id="skillsTable">Lade...</div>';
+      try {
+        const skills = await api('/api/skills');
+        if (!skills.length) {
+          document.getElementById('skillsTable').innerHTML = '<div class="empty-state"><div class="empty-state-icon">&#x26A1;</div><div class="empty-state-text">Skills werden beim ersten Start registriert.</div></div>';
+          return;
+        }
+        document.getElementById('skillsTable').innerHTML = `<table>
+          <thead><tr><th>Skill</th><th>Kategorie</th><th>Beschreibung</th><th>API Key</th><th>Status</th></tr></thead>
+          <tbody>${skills.map(s => `<tr>
+            <td style="font-weight:500">${esc(s.name)}</td>
+            <td><span class="agent-tag">${s.category}</span></td>
+            <td style="color:var(--text-dim)">${esc(s.description || '')}</td>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:11px">${s.requires_key || '-'}</td>
+            <td><span class="badge ${s.enabled?'badge-success':'badge-error'}">${s.enabled?'aktiv':'inaktiv'}</span></td>
+          </tr>`).join('')}</tbody></table>`;
+      } catch {
+        document.getElementById('skillsTable').innerHTML = '<div class="empty-state"><div class="empty-state-text">Skills werden geladen sobald die Datenbank verbunden ist.</div></div>';
+      }
+    }
+
+    // ════════════════════════════════════════════════════
+    // MEMORY
+    // ════════════════════════════════════════════════════
+    async function renderMemory() {
+      const main = document.getElementById('mainContent');
+      main.innerHTML = `
+        <div class="page-title">Agent Memory & Knowledge</div>
+        <div style="display:flex;gap:8px;margin-bottom:16px">
+          <button class="btn btn-sm ${!memoryFilter?'btn-primary':'btn-ghost'}" onclick="memoryFilter='';renderMemory()">Alle</button>
+          <button class="btn btn-sm ${memoryFilter==='fact'?'btn-primary':'btn-ghost'}" onclick="memoryFilter='fact';renderMemory()">Facts</button>
+          <button class="btn btn-sm ${memoryFilter==='decision'?'btn-primary':'btn-ghost'}" onclick="memoryFilter='decision';renderMemory()">Decisions</button>
+          <button class="btn btn-sm ${memoryFilter==='preference'?'btn-primary':'btn-ghost'}" onclick="memoryFilter='preference';renderMemory()">Preferences</button>
+        </div>
+        <div class="table-container" id="memoryTable">Lade...</div>`;
+      try {
+        const url = memoryFilter ? `/api/memory?type=${memoryFilter}&limit=50` : '/api/memory?limit=50';
+        const memory = await api(url);
+        if (!memory.length) {
+          document.getElementById('memoryTable').innerHTML = '<div class="empty-state"><div class="empty-state-icon">&#x1F9E0;</div><div class="empty-state-text">Noch keine Memory-Eintraege. Agents speichern automatisch wichtige Fakten.</div></div>';
+          return;
+        }
+        document.getElementById('memoryTable').innerHTML = `<table>
+          <thead><tr><th>Agent</th><th>Typ</th><th>Key</th><th>Value</th><th>Datum</th></tr></thead>
+          <tbody>${memory.map(m => `<tr>
+            <td>${m.agent_slug}</td>
+            <td><span class="agent-tag">${m.type}</span></td>
+            <td style="font-weight:500">${esc(m.key || '')}</td>
+            <td style="color:var(--text-dim);max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(m.value)}</td>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${m.created_at ? new Date(m.created_at).toLocaleDateString('de-DE') : '-'}</td>
+          </tr>`).join('')}</tbody></table>`;
+      } catch {
+        document.getElementById('memoryTable').innerHTML = '<div class="empty-state"><div class="empty-state-text">Memory wird geladen sobald die Datenbank verbunden ist.</div></div>';
+      }
+    }
+    let memoryFilter = '';
+
+    // ════════════════════════════════════════════════════
+    // LEARNING & SELF-IMPROVEMENT
+    // ════════════════════════════════════════════════════
+    async function renderLearning() {
+      const main = document.getElementById('mainContent');
+      main.innerHTML = `
+        <div class="page-title">Self-Learning & Improvement</div>
+        <div class="page-subtitle">JARVIS lernt aus jedem Task und verbessert sich automatisch</div>
+        <div class="card-grid" id="learnStats">Lade...</div>
+        <div style="margin-top:24px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <h3 style="font-size:18px;font-weight:600">Learning Journal</h3>
+          </div>
+          <div class="table-container" id="journalTable">Lade...</div>
+        </div>
+        <div style="margin-top:24px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+            <h3 style="font-size:18px;font-weight:600">Improvement Queue</h3>
+          </div>
+          <div class="table-container" id="improvementTable">Lade...</div>
+        </div>`;
+
+      try {
+        const [stats, journal, improvements] = await Promise.all([
+          api('/api/learning/stats'),
+          api('/api/learning/journal?limit=20'),
+          api('/api/improvements?limit=20'),
+        ]);
+
+        // Stats cards
+        const journalTypes = stats.journal_by_type || [];
+        const totalLearnings = journalTypes.reduce((s, j) => s + parseInt(j.count), 0);
+        const avgImpact = journalTypes.length ? (journalTypes.reduce((s, j) => s + parseFloat(j.avg_impact), 0) / journalTypes.length).toFixed(2) : '0';
+        const pendingImprovements = (stats.improvements || []).find(i => i.status === 'pending');
+
+        document.getElementById('learnStats').innerHTML = `
+          <div class="card stat-blue"><div class="card-title">Total Learnings</div>
+            <div class="card-value" style="font-size:28px">${totalLearnings}</div></div>
+          <div class="card stat-green"><div class="card-title">Avg Impact Score</div>
+            <div class="card-value" style="font-size:28px">${avgImpact}</div></div>
+          <div class="card stat-warning"><div class="card-title">Pending Improvements</div>
+            <div class="card-value" style="font-size:28px">${pendingImprovements?.count || 0}</div></div>
+          <div class="card stat-purple"><div class="card-title">Pattern Types</div>
+            <div class="card-value" style="font-size:28px">${(stats.patterns || []).length}</div></div>`;
+
+        // Journal table
+        if (journal.length) {
+          const eventColors = { success:'badge-success', failure:'badge-error', correction:'badge-warning', discovery:'badge-info', optimization:'badge-purple', pattern_found:'badge-purple', skill_learned:'badge-success' };
+          document.getElementById('journalTable').innerHTML = `<table>
+            <thead><tr><th>Agent</th><th>Event</th><th>Description</th><th>Impact</th><th>Datum</th></tr></thead>
+            <tbody>${journal.map(j => `<tr>
+              <td>${j.agent_slug || '-'}</td>
+              <td><span class="badge ${eventColors[j.event_type]||'badge-info'}">${j.event_type}</span></td>
+              <td style="max-width:400px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(j.description || '')}</td>
+              <td style="font-family:'JetBrains Mono',monospace">${j.impact_score ? parseFloat(j.impact_score).toFixed(2) : '-'}</td>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${j.created_at ? new Date(j.created_at).toLocaleString('de-DE') : '-'}</td>
+            </tr>`).join('')}</tbody></table>`;
+        } else {
+          document.getElementById('journalTable').innerHTML = '<div class="empty-state"><div class="empty-state-text">Learning Journal wird nach den ersten Tasks gefuellt.</div></div>';
+        }
+
+        // Improvements table
+        if (improvements.length) {
+          document.getElementById('improvementTable').innerHTML = `<table>
+            <thead><tr><th>Typ</th><th>Beschreibung</th><th>Risiko</th><th>Status</th><th>Aktion</th></tr></thead>
+            <tbody>${improvements.map(imp => `<tr>
+              <td><span class="agent-tag">${imp.improvement_type || imp.type || '-'}</span></td>
+              <td style="max-width:400px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(imp.description || '')}</td>
+              <td><span class="badge ${imp.risk_level==='low'?'badge-success':imp.risk_level==='medium'?'badge-warning':'badge-error'}">${imp.risk_level || '-'}</span></td>
+              <td><span class="badge ${imp.status==='applied'?'badge-success':imp.status==='pending'?'badge-warning':imp.status==='rejected'?'badge-error':'badge-info'}">${imp.status}</span></td>
+              <td>${imp.status === 'pending' ? `
+                <div class="btn-group">
+                  <button class="btn btn-success btn-sm" onclick="reviewImprovement('${imp.id}','approved')">Approve</button>
+                  <button class="btn btn-danger btn-sm" onclick="reviewImprovement('${imp.id}','rejected')">Reject</button>
+                </div>` : '-'}</td>
+            </tr>`).join('')}</tbody></table>`;
+        } else {
+          document.getElementById('improvementTable').innerHTML = '<div class="empty-state"><div class="empty-state-text">Improvement-Vorschlaege erscheinen nach ca. 50 Tasks.</div></div>';
+        }
+      } catch {
+        document.getElementById('learnStats').innerHTML = '<div class="card"><p style="color:var(--text-dim)">Learning-Daten werden nach den ersten Tasks verfuegbar.</p></div>';
+        document.getElementById('journalTable').innerHTML = '';
+        document.getElementById('improvementTable').innerHTML = '';
+      }
+    }
+
+    async function reviewImprovement(id, status) {
+      try {
+        await api(`/api/improvements/${id}`, { method: 'PATCH', body: { status } });
+        showToast(`Improvement ${status}`);
+        renderLearning();
+      } catch {
+        showToast('Fehler', 'error');
+      }
+    }
+
+    // ════════════════════════════════════════════════════
+    // CONVERSATIONS
+    // ════════════════════════════════════════════════════
+    async function renderConversations() {
+      const main = document.getElementById('mainContent');
+      main.innerHTML = `
+        <div class="page-title">Conversations</div>
+        <div class="page-subtitle">Alle gespeicherten Gespraeche — JARVIS vergisst nie</div>
+        <div class="table-container" id="convTable">Lade...</div>`;
+
+      try {
+        const conversations = await api('/api/conversations?limit=30');
+        if (!conversations.length) {
+          document.getElementById('convTable').innerHTML = '<div class="empty-state"><div class="empty-state-icon">&#x1F4DD;</div><div class="empty-state-text">Noch keine Conversations gespeichert.</div></div>';
+          return;
+        }
+        document.getElementById('convTable').innerHTML = `<table>
+          <thead><tr><th>Conversation</th><th>Channel</th><th>Agents</th><th>Messages</th><th>Start</th><th>Letzte</th></tr></thead>
+          <tbody>${conversations.map(c => `<tr style="cursor:pointer" onclick="openConversation('${c.conversation_id}')">
+            <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${esc((c.conversation_id || '').substring(0, 12))}...</td>
+            <td><span class="agent-tag">${c.channel || '-'}</span></td>
+            <td>${(c.agents || []).filter(Boolean).map(a => `<span class="agent-tag">${a}</span>`).join(' ')}</td>
+            <td style="font-family:'JetBrains Mono',monospace">${c.message_count}</td>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${c.started_at ? new Date(c.started_at).toLocaleString('de-DE') : '-'}</td>
+            <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${c.last_message_at ? new Date(c.last_message_at).toLocaleString('de-DE') : '-'}</td>
+          </tr>`).join('')}</tbody></table>`;
+      } catch {
+        document.getElementById('convTable').innerHTML = '<div class="empty-state"><div class="empty-state-text">Conversations werden nach dem ersten Gespraech verfuegbar.</div></div>';
+      }
+    }
+
+    async function openConversation(id) {
+      try {
+        const messages = await api(`/api/conversations/${id}`);
+        if (!messages.length) { showToast('Keine Nachrichten', 'error'); return; }
+
+        openModal(`
+          <div class="modal-header">
+            <div class="modal-title">Conversation</div>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+          </div>
+          <div style="max-height:60vh;overflow-y:auto">
+            ${messages.map(m => `
+              <div style="padding:12px 0;border-bottom:1px solid var(--border)">
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                  <span style="font-weight:600;font-size:13px;color:${m.role==='user'?'var(--accent)':m.role==='assistant'?'var(--success)':'var(--text-dim)'}">${esc(m.role?.toUpperCase() || 'SYSTEM')} ${m.agent_slug ? '('+m.agent_slug+')' : ''}</span>
+                  <span style="font-size:11px;color:var(--text-dim);font-family:'JetBrains Mono',monospace">${m.created_at ? new Date(m.created_at).toLocaleString('de-DE') : ''}</span>
+                </div>
+                <div style="font-size:14px;color:var(--text-secondary);line-height:1.6;white-space:pre-wrap">${esc(m.content || '')}</div>
+              </div>
+            `).join('')}
+          </div>
+        `);
+      } catch {
+        showToast('Fehler beim Laden', 'error');
+      }
+    }
+
+    // ════════════════════════════════════════════════════
+    // OMI WEARABLE
+    // ════════════════════════════════════════════════════
+    async function renderOMI() {
+      const main = document.getElementById('mainContent');
+      main.innerHTML = `
+        <div class="page-title">OMI Wearable</div>
+        <p class="page-subtitle">Dein persoenlicher KI-Begleiter — alles was du sagst und hoerst wird zu JARVIS Intelligence.</p>
+
+        <div class="card-grid" id="omiStats">
+          <div class="card stat-blue"><div class="card-header"><span class="card-title">Conversations</span></div><div class="card-value" id="omiMemCount">—</div></div>
+          <div class="card stat-purple"><div class="card-header"><span class="card-title">Entities</span></div><div class="card-value" id="omiEntCount">—</div></div>
+          <div class="card stat-green"><div class="card-header"><span class="card-title">Events</span></div><div class="card-value" id="omiEvtCount">—</div></div>
+          <div class="card stat-cyan"><div class="card-header"><span class="card-title">Transcript Sessions</span></div><div class="card-value" id="omiSesCount">—</div></div>
+        </div>
+
+        <div style="display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap">
+          <button class="btn btn-ghost btn-sm" onclick="showOMITab('memories')" id="omiTabMem" style="border-color:var(--accent);color:var(--accent)">Memories</button>
+          <button class="btn btn-ghost btn-sm" onclick="showOMITab('entities')" id="omiTabEnt">Entities</button>
+          <button class="btn btn-ghost btn-sm" onclick="showOMITab('setup')" id="omiTabSetup">Setup</button>
+        </div>
+        <div id="omiContent">Lade...</div>`;
+
+      // Load stats
+      try {
+        const stats = await api('/api/omi/stats');
+        document.getElementById('omiMemCount').textContent = stats.memories?.total || '0';
+        document.getElementById('omiEntCount').textContent = stats.entities?.total || '0';
+        document.getElementById('omiEvtCount').textContent = stats.events?.total || '0';
+        document.getElementById('omiSesCount').textContent = stats.transcripts?.sessions || '0';
+      } catch {}
+
+      showOMITab('memories');
+    }
+
+    async function showOMITab(tab) {
+      document.querySelectorAll('[id^="omiTab"]').forEach(el => {
+        el.style.borderColor = 'var(--border)'; el.style.color = 'var(--text-secondary)';
+      });
+      const btn = document.getElementById(`omiTab${tab.charAt(0).toUpperCase()+tab.slice(1,3)}`);
+      if (btn) { btn.style.borderColor = 'var(--accent)'; btn.style.color = 'var(--accent)'; }
+
+      const c = document.getElementById('omiContent');
+
+      if (tab === 'memories') {
+        try {
+          const memories = await api('/api/omi/memories?limit=20');
+          if (!memories.length) {
+            c.innerHTML = '<div class="empty-state"><div class="empty-state-icon">&#x1F3A4;</div><div class="empty-state-text">Noch keine OMI Memories. Verbinde dein OMI Device um zu starten.</div></div>';
+            return;
+          }
+          c.innerHTML = `<div class="table-container"><table>
+            <thead><tr><th>Titel</th><th>Kategorie</th><th>Wichtigkeit</th><th>Datum</th></tr></thead>
+            <tbody>${memories.map(m => `<tr>
+              <td>${esc(m.title || 'Untitled')}</td>
+              <td><span class="badge badge-info">${esc(m.category || 'other')}</span></td>
+              <td><span class="badge ${m.importance >= 7 ? 'badge-warning' : 'badge-success'}">${m.importance || 5}/10</span></td>
+              <td style="font-size:12px;color:var(--text-dim)">${m.created_at ? new Date(m.created_at).toLocaleString('de-DE') : '—'}</td>
+            </tr>`).join('')}</tbody>
+          </table></div>`;
+        } catch { c.innerHTML = '<p style="color:var(--text-dim)">Memories nicht verfuegbar.</p>'; }
+
+      } else if (tab === 'entities') {
+        try {
+          const entities = await api('/api/omi/entities?limit=30');
+          if (!entities.length) {
+            c.innerHTML = '<div class="empty-state"><div class="empty-state-icon">&#x1F465;</div><div class="empty-state-text">Noch keine Entities erkannt.</div></div>';
+            return;
+          }
+          c.innerHTML = `<div class="table-container"><table>
+            <thead><tr><th>Name</th><th>Typ</th><th>Erwaehnt</th><th>Kontext</th><th>Zuletzt</th></tr></thead>
+            <tbody>${entities.map(e => `<tr>
+              <td style="font-weight:600">${esc(e.name)}</td>
+              <td><span class="badge badge-info">${esc(e.entity_type)}</span></td>
+              <td style="font-family:'JetBrains Mono',monospace">${e.mention_count}x</td>
+              <td style="font-size:12px;color:var(--text-secondary)">${esc(e.context || '')}</td>
+              <td style="font-size:12px;color:var(--text-dim)">${e.last_mentioned ? new Date(e.last_mentioned).toLocaleDateString('de-DE') : '—'}</td>
+            </tr>`).join('')}</tbody>
+          </table></div>`;
+        } catch { c.innerHTML = '<p style="color:var(--text-dim)">Entities nicht verfuegbar.</p>'; }
+
+      } else if (tab === 'setup') {
+        const webhookBase = window.location.origin;
+        c.innerHTML = `<div class="card" style="max-width:700px">
+          <div class="card-header"><span class="card-title">OMI Device Setup</span></div>
+          <p style="font-size:13px;color:var(--text-secondary);margin:12px 0">
+            Verbinde dein OMI Wearable mit JARVIS in 3 Schritten:
+          </p>
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div class="card" style="padding:14px">
+              <div style="font-weight:600;font-size:14px;margin-bottom:6px">1. OMI App oeffnen</div>
+              <p style="font-size:13px;color:var(--text-dim)">Oeffne die OMI App auf deinem Smartphone und gehe zu Explore → Create App</p>
+            </div>
+            <div class="card" style="padding:14px">
+              <div style="font-weight:600;font-size:14px;margin-bottom:6px">2. Webhook URLs eintragen</div>
+              <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+                <div>
+                  <label style="font-size:12px;color:var(--text-dim)">Memory Webhook</label>
+                  <input class="input" readonly value="${webhookBase}/omi/memory" onclick="this.select();document.execCommand('copy')">
+                </div>
+                <div>
+                  <label style="font-size:12px;color:var(--text-dim)">Transcript Webhook</label>
+                  <input class="input" readonly value="${webhookBase}/omi/transcript" onclick="this.select();document.execCommand('copy')">
+                </div>
+                <div>
+                  <label style="font-size:12px;color:var(--text-dim)">Audio Webhook (optional)</label>
+                  <input class="input" readonly value="${webhookBase}/omi/audio" onclick="this.select();document.execCommand('copy')">
+                </div>
+                <div>
+                  <label style="font-size:12px;color:var(--text-dim)">Chat Tools Manifest</label>
+                  <input class="input" readonly value="${webhookBase}/.well-known/omi-tools.json" onclick="this.select();document.execCommand('copy')">
+                </div>
+                <div>
+                  <label style="font-size:12px;color:var(--text-dim)">Setup Status URL</label>
+                  <input class="input" readonly value="${webhookBase}/omi/setup-status" onclick="this.select();document.execCommand('copy')">
+                </div>
+              </div>
+            </div>
+            <div class="card" style="padding:14px">
+              <div style="font-weight:600;font-size:14px;margin-bottom:6px">3. Triggers aktivieren</div>
+              <p style="font-size:13px;color:var(--text-dim)">Aktiviere in der OMI App: Memory Creation, Real-time Transcript, und Chat Tools.</p>
+            </div>
+          </div>
+          <div style="margin-top:16px;padding:12px;border:1px solid var(--accent);border-radius:var(--radius-sm);background:rgba(59,130,246,0.05)">
+            <div style="font-size:13px;color:var(--accent);font-weight:600">Was passiert dann?</div>
+            <p style="font-size:13px;color:var(--text-secondary);margin-top:4px">
+              Alles was du sagst und hoerst wird automatisch in JARVIS verarbeitet:
+              Kontakte, Geburtstage, Termine, Entscheidungen, Ideen — alles wird gespeichert.
+              Sprich einfach "Hey JARVIS" und dein Befehl wird ausgefuehrt.
+            </p>
+          </div>
+        </div>`;
+      }
+    }
+
+    // ════════════════════════════════════════════════════
+    // SERVICES
+    // ════════════════════════════════════════════════════
+    async function renderServices() {
+      const main = document.getElementById('mainContent');
+      main.innerHTML = `
+        <div class="page-title">System Services</div>
+        <div class="page-subtitle">Status aller verbundenen Services</div>
+        <div class="service-grid" id="serviceGrid">Lade...</div>
+        <div style="margin-top:24px">
+          <button class="btn btn-ghost btn-sm" onclick="renderServices()">Aktualisieren</button>
+        </div>`;
+
+      try {
+        const services = await api('/api/system/services');
+        const serviceNames = {
+          database: { label: 'PostgreSQL', icon: '&#x1F5C4;&#xFE0F;' },
+          redis: { label: 'Redis Cache', icon: '&#x26A1;' },
+          openclaw: { label: 'OpenClaw', icon: '&#x1F916;' },
+          n8n: { label: 'N8N Workflows', icon: '&#x1F504;' },
+          litellm: { label: 'LiteLLM Router', icon: '&#x1F9E0;' },
+        };
+
+        document.getElementById('serviceGrid').innerHTML = Object.entries(services).map(([key, svc]) => {
+          const info = serviceNames[key] || { label: key, icon: '&#x2699;&#xFE0F;' };
+          const details = [];
+          if (svc.version) details.push(`v${svc.version}`);
+          if (svc.size_mb) details.push(`${svc.size_mb} MB`);
+          if (svc.memory) details.push(svc.memory);
+          if (svc.url) details.push(svc.url);
+
+          return `<div class="service-card">
+            <div class="service-name">
+              <span class="service-dot ${svc.status}"></span>
+              <span>${info.icon} ${info.label}</span>
+            </div>
+            <div style="margin-bottom:4px"><span class="badge ${svc.status==='ok'?'badge-success':svc.status==='error'?'badge-error':svc.status==='disabled'?'badge-info':'badge-warning'}">${svc.status}</span></div>
+            ${details.length ? `<div class="service-detail">${details.join(' | ')}</div>` : ''}
+          </div>`;
+        }).join('');
+      } catch {
+        document.getElementById('serviceGrid').innerHTML = '<div class="service-card"><p style="color:var(--text-dim)">Services nicht erreichbar.</p></div>';
+      }
+    }
+
+    // ════════════════════════════════════════════════════
+    // ONBOARDING WIZARD + DEPENDENCY CHECKER
+    // ════════════════════════════════════════════════════
+    async function renderOnboarding() {
+      const main = document.getElementById('mainContent');
+      main.innerHTML = `
+        <div class="page-title">Setup Wizard</div>
+        <p class="page-subtitle">Verbinde deine Accounts, APIs und Services — alles an einem Ort.</p>
+
+        <div id="depWarnings"></div>
+
+        <div style="display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap">
+          <button class="btn btn-ghost btn-sm" onclick="onboardingStep(1)" id="obStep1Btn" style="border-color:var(--accent);color:var(--accent)">1. Firma</button>
+          <button class="btn btn-ghost btn-sm" onclick="onboardingStep(2)" id="obStep2Btn">2. Social Media</button>
+          <button class="btn btn-ghost btn-sm" onclick="onboardingStep(3)" id="obStep3Btn">3. API Keys</button>
+          <button class="btn btn-ghost btn-sm" onclick="onboardingStep(4)" id="obStep4Btn">4. AI Modelle</button>
+          <button class="btn btn-ghost btn-sm" onclick="onboardingStep(5)" id="obStep5Btn">5. Integrationen</button>
+          <button class="btn btn-ghost btn-sm" onclick="onboardingStep(6)" id="obStep6Btn">6. Telegram</button>
+        </div>
+
+        <div id="onboardingContent"></div>
+        <div style="margin-top:20px;display:flex;gap:12px" id="onboardingActions"></div>`;
+
+      // Check dependencies
+      try {
+        const deps = await api('/api/dependencies/check');
+        if (deps.warnings && deps.warnings.length > 0) {
+          document.getElementById('depWarnings').innerHTML = deps.warnings.map(w => `
+            <div class="card" style="border-color:${w.required ? 'var(--error)' : 'var(--warning)'};margin-bottom:12px;padding:14px 18px">
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="font-size:20px">${w.required ? '&#x1F6A8;' : '&#x26A0;&#xFE0F;'}</span>
+                <div>
+                  <div style="font-weight:600;font-size:14px;color:${w.required ? 'var(--error)' : 'var(--warning)'}">${esc(w.service)} — ${w.required ? 'ERFORDERLICH' : 'Optional'}</div>
+                  <div style="font-size:13px;color:var(--text-secondary)">${esc(w.message)}</div>
+                  ${w.docker_image ? `<div style="font-size:12px;color:var(--text-dim);margin-top:4px;font-family:'JetBrains Mono',monospace">docker pull ${esc(w.docker_image)}</div>` : ''}
+                  ${w.install_url ? `<a href="${esc(w.install_url)}" target="_blank" style="font-size:12px;color:var(--accent)">${esc(w.install_url)}</a>` : ''}
+                </div>
+              </div>
+            </div>`).join('');
+        }
+      } catch {}
+
+      // Load existing config
+      try {
+        const status = await api('/api/onboarding/status');
+        window._obData = {
+          company_name: status.company?.name || '',
+          company_domain: status.company?.domain || '',
+          language: status.company?.language || 'de',
+          social_accounts: status.social || {},
+          api_keys: status.apis || {},
+          model_config: status.models || {},
+          integrations: status.integrations || {},
+          telegram_config: status.telegram || {},
+        };
+      } catch {
+        window._obData = { company_name:'', company_domain:'', language:'de', social_accounts:{}, api_keys:{}, model_config:{}, integrations:{}, telegram_config:{} };
+      }
+      onboardingStep(1);
+    }
+
+    function onboardingStep(step) {
+      window._obStep = step;
+      document.querySelectorAll('[id^="obStep"]').forEach(el => {
+        el.style.borderColor = 'var(--border)';
+        el.style.color = 'var(--text-secondary)';
+      });
+      const btn = document.getElementById(`obStep${step}Btn`);
+      if (btn) { btn.style.borderColor = 'var(--accent)'; btn.style.color = 'var(--accent)'; }
+
+      const d = window._obData || {};
+      const c = document.getElementById('onboardingContent');
+      const a = document.getElementById('onboardingActions');
+
+      if (step === 1) {
+        c.innerHTML = `<div class="card" style="max-width:600px">
+          <div class="card-header"><span class="card-title">Firmendaten</span></div>
+          <div style="display:flex;flex-direction:column;gap:12px;margin-top:12px">
+            <label style="font-size:13px;color:var(--text-secondary)">Firmenname</label>
+            <input class="input" id="ob_company" value="${esc(d.company_name)}" placeholder="SYSTEMS™">
+            <label style="font-size:13px;color:var(--text-secondary)">Domain</label>
+            <input class="input" id="ob_domain" value="${esc(d.company_domain)}" placeholder="architectofscale.com">
+            <label style="font-size:13px;color:var(--text-secondary)">Sprache</label>
+            <select class="input" id="ob_lang">
+              <option value="de" ${d.language==='de'?'selected':''}>Deutsch</option>
+              <option value="en" ${d.language==='en'?'selected':''}>English</option>
+            </select>
+          </div>
+        </div>`;
+      } else if (step === 2) {
+        const socials = [
+          {key:'instagram',label:'Instagram',ph:'@username'},
+          {key:'linkedin',label:'LinkedIn',ph:'Company Page URL'},
+          {key:'twitter',label:'Twitter / X',ph:'@handle'},
+          {key:'facebook',label:'Facebook',ph:'Page URL'},
+          {key:'tiktok',label:'TikTok',ph:'@username'},
+          {key:'youtube',label:'YouTube',ph:'Channel URL'},
+        ];
+        c.innerHTML = `<div class="card" style="max-width:600px">
+          <div class="card-header"><span class="card-title">Social Media Accounts</span></div>
+          <p style="font-size:13px;color:var(--text-dim);margin:8px 0 12px">Verbinde deine Social Media Kanaele. Fuer das Posten wird Postiz benoetigt.</p>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            ${socials.map(s => `
+              <div style="display:flex;align-items:center;gap:10px">
+                <label style="font-size:13px;width:100px;color:var(--text-secondary)">${s.label}</label>
+                <input class="input" style="flex:1" id="ob_social_${s.key}" value="${esc(d.social_accounts[s.key]||'')}" placeholder="${s.ph}">
+              </div>`).join('')}
+          </div>
+        </div>`;
+      } else if (step === 3) {
+        const apis = [
+          {key:'anthropic',label:'Anthropic (Claude)',ph:'sk-ant-...'},
+          {key:'openai',label:'OpenAI',ph:'sk-...'},
+          {key:'groq',label:'Groq',ph:'gsk_...'},
+          {key:'hubspot',label:'HubSpot CRM',ph:'pat-...'},
+          {key:'airtable',label:'Airtable',ph:'pat...'},
+          {key:'postiz',label:'Postiz API',ph:'API Key'},
+        ];
+        c.innerHTML = `<div class="card" style="max-width:600px">
+          <div class="card-header"><span class="card-title">API Keys</span></div>
+          <p style="font-size:13px;color:var(--text-dim);margin:8px 0 12px">Deine API Keys werden sicher in der .env gespeichert und an OpenClaw weitergeleitet.</p>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            ${apis.map(a => `
+              <div style="display:flex;align-items:center;gap:10px">
+                <label style="font-size:13px;width:120px;color:var(--text-secondary)">${a.label}</label>
+                <input class="input" style="flex:1" type="password" id="ob_api_${a.key}" value="${esc(d.api_keys[a.key]||'')}" placeholder="${a.ph}">
+              </div>`).join('')}
+          </div>
+        </div>`;
+      } else if (step === 4) {
+        c.innerHTML = `<div class="card" style="max-width:600px">
+          <div class="card-header"><span class="card-title">AI Modell-Konfiguration</span></div>
+          <p style="font-size:13px;color:var(--text-dim);margin:8px 0 12px">Smart Routing: Boss + Leader auf Sonnet, Worker auf Ollama (kostenlos).</p>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <label style="font-size:13px;width:140px;color:var(--text-secondary)">Sonnet Model</label>
+              <input class="input" style="flex:1" id="ob_model_sonnet" value="${esc(d.model_config.sonnet||'claude-sonnet-4-20250514')}" placeholder="claude-sonnet-4-20250514">
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <label style="font-size:13px;width:140px;color:var(--text-secondary)">Haiku Model</label>
+              <input class="input" style="flex:1" id="ob_model_haiku" value="${esc(d.model_config.haiku||'claude-haiku-4-5-20251001')}" placeholder="claude-haiku-4-5-20251001">
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <label style="font-size:13px;width:140px;color:var(--text-secondary)">Ollama Model</label>
+              <input class="input" style="flex:1" id="ob_model_ollama" value="${esc(d.model_config.ollama||'llama3.1:8b')}" placeholder="llama3.1:8b">
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <label style="font-size:13px;width:140px;color:var(--text-secondary)">Groq Model</label>
+              <input class="input" style="flex:1" id="ob_model_groq" value="${esc(d.model_config.groq||'llama-3.1-70b-versatile')}" placeholder="llama-3.1-70b-versatile">
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <label style="font-size:13px;width:140px;color:var(--text-secondary)">Ollama URL</label>
+              <input class="input" style="flex:1" id="ob_model_ollama_url" value="${esc(d.model_config.ollama_url||'http://host.docker.internal:11434')}" placeholder="http://host.docker.internal:11434">
+            </div>
+          </div>
+        </div>`;
+      } else if (step === 5) {
+        const integs = [
+          {key:'openclaw_url',label:'OpenClaw URL',ph:'http://localhost:8080'},
+          {key:'n8n_url',label:'N8N URL',ph:'http://localhost:5678'},
+          {key:'postiz_url',label:'Postiz URL',ph:'http://localhost:4200'},
+          {key:'litellm_url',label:'LiteLLM URL',ph:'http://jarvis-litellm:4000'},
+        ];
+        c.innerHTML = `<div class="card" style="max-width:600px">
+          <div class="card-header"><span class="card-title">Service-Integrationen</span></div>
+          <p style="font-size:13px;color:var(--text-dim);margin:8px 0 12px">URLs der Services auf deinem VPS. Werden an OpenClaw und alle Agents verteilt.</p>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            ${integs.map(i => `
+              <div style="display:flex;align-items:center;gap:10px">
+                <label style="font-size:13px;width:120px;color:var(--text-secondary)">${i.label}</label>
+                <input class="input" style="flex:1" id="ob_integ_${i.key}" value="${esc(d.integrations[i.key]||'')}" placeholder="${i.ph}">
+              </div>`).join('')}
+          </div>
+        </div>`;
+      } else if (step === 6) {
+        c.innerHTML = `<div class="card" style="max-width:600px">
+          <div class="card-header"><span class="card-title">Telegram Konfiguration</span></div>
+          <p style="font-size:13px;color:var(--text-dim);margin:8px 0 12px">Verbinde Telegram um mit deinem Team zu kommunizieren. Erstelle einen Bot via @BotFather.</p>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <label style="font-size:13px;width:120px;color:var(--text-secondary)">Bot Token</label>
+              <input class="input" style="flex:1" type="password" id="ob_tg_token" value="${esc(d.telegram_config.bot_token||'')}" placeholder="123456:ABC-DEF...">
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <label style="font-size:13px;width:120px;color:var(--text-secondary)">Chat ID</label>
+              <input class="input" style="flex:1" id="ob_tg_chat" value="${esc(d.telegram_config.chat_id||'')}" placeholder="-100...">
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <label style="font-size:13px;width:120px;color:var(--text-secondary)">Team Group ID</label>
+              <input class="input" style="flex:1" id="ob_tg_group" value="${esc(d.telegram_config.group_id||'')}" placeholder="-100... (optional)">
+            </div>
+          </div>
+        </div>`;
+      }
+
+      a.innerHTML = `
+        ${step > 1 ? `<button class="btn btn-ghost" onclick="onboardingStep(${step-1})">Zurueck</button>` : ''}
+        ${step < 6 ? `<button class="btn btn-primary" onclick="obSaveStep(${step});onboardingStep(${step+1})">Weiter</button>` : ''}
+        ${step === 6 ? `<button class="btn btn-primary" onclick="obSaveAll()">Speichern & Aktivieren</button>` : ''}
+      `;
+    }
+
+    function obSaveStep(step) {
+      const d = window._obData;
+      if (step === 1) {
+        d.company_name = document.getElementById('ob_company')?.value || '';
+        d.company_domain = document.getElementById('ob_domain')?.value || '';
+        d.language = document.getElementById('ob_lang')?.value || 'de';
+      } else if (step === 2) {
+        ['instagram','linkedin','twitter','facebook','tiktok','youtube'].forEach(k => {
+          const v = document.getElementById(`ob_social_${k}`)?.value;
+          if (v) d.social_accounts[k] = v;
+        });
+      } else if (step === 3) {
+        ['anthropic','openai','groq','hubspot','airtable','postiz'].forEach(k => {
+          const v = document.getElementById(`ob_api_${k}`)?.value;
+          if (v) d.api_keys[k] = v;
+        });
+      } else if (step === 4) {
+        d.model_config = {
+          sonnet: document.getElementById('ob_model_sonnet')?.value || '',
+          haiku: document.getElementById('ob_model_haiku')?.value || '',
+          ollama: document.getElementById('ob_model_ollama')?.value || '',
+          groq: document.getElementById('ob_model_groq')?.value || '',
+          ollama_url: document.getElementById('ob_model_ollama_url')?.value || '',
+        };
+      } else if (step === 5) {
+        ['openclaw_url','n8n_url','postiz_url','litellm_url'].forEach(k => {
+          const v = document.getElementById(`ob_integ_${k}`)?.value;
+          if (v) d.integrations[k] = v;
+        });
+      } else if (step === 6) {
+        d.telegram_config = {
+          bot_token: document.getElementById('ob_tg_token')?.value || '',
+          chat_id: document.getElementById('ob_tg_chat')?.value || '',
+          group_id: document.getElementById('ob_tg_group')?.value || '',
+        };
+      }
+    }
+
+    async function obSaveAll() {
+      obSaveStep(window._obStep);
+      try {
+        const result = await api('/api/onboarding/save', { method: 'POST', body: window._obData });
+        if (result.saved) {
+          showToast('Setup gespeichert! Daten an OpenClaw gesendet.' + (result.openclaw_synced ? '' : ' (OpenClaw offline — lokal gespeichert)'));
+        }
+      } catch (err) {
+        showToast('Speichern fehlgeschlagen: ' + err.message, 'error');
+      }
+    }
+
+    // ════════════════════════════════════════════════════
+    // SETTINGS
+    // ════════════════════════════════════════════════════
+    async function renderSettings() {
+      const main = document.getElementById('mainContent');
+      main.innerHTML = `
+        <div class="page-title">Einstellungen</div>
+        <div class="card-grid">
+          <div class="card">
+            <div class="card-header"><span class="card-title">API Keys Status</span></div>
+            <div id="keysStatus">Lade...</div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">System</span></div>
+            <p style="color:var(--text-secondary);font-size:14px;line-height:1.8">
+              Version: <span style="font-family:'JetBrains Mono',monospace">v1.5.0</span><br>
+              Dashboard: <span style="font-family:'JetBrains Mono',monospace">Node.js + Express</span><br>
+              Database: <span style="font-family:'JetBrains Mono',monospace">PostgreSQL 16</span><br>
+              Cache: <span style="font-family:'JetBrains Mono',monospace">Redis 7</span><br>
+              AI Router: <span style="font-family:'JetBrains Mono',monospace">LiteLLM</span><br>
+              Agents: <span style="font-family:'JetBrains Mono',monospace">OpenClaw</span><br>
+              Workflows: <span style="font-family:'JetBrains Mono',monospace">N8N</span>
+            </p>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Aktionen</span></div>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+              <button class="btn btn-ghost" onclick="syncAllAgents()">Alle Agents sync</button>
+              <button class="btn btn-danger" onclick="logout()">Abmelden</button>
+            </div>
+          </div>
+        </div>`;
+
+      try {
+        const keys = await api('/api/keys');
+        document.getElementById('keysStatus').innerHTML = keys.map(k => `
+          <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+            <span style="font-size:13px">${k.service}</span>
+            <span class="badge ${k.is_set ? 'badge-success' : 'badge-warning'}">${k.is_set ? 'gesetzt' : 'fehlt'}</span>
+          </div>
+        `).join('');
+      } catch {
+        document.getElementById('keysStatus').innerHTML = '<p style="color:var(--text-dim);font-size:13px">Keys werden ueber die .env Datei konfiguriert.</p>';
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('jarvis_token');
+      location.reload();
+    }
+
+    // ── UTIL ─────────────────────────────────────────────
+    function esc(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>

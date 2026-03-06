@@ -1,0 +1,197 @@
+# ═══════════════════════════════════════════════════════════
+# JARVIS 1.5 — Smart Model Router (4-Tier Architecture)
+# SYSTEMS™ · architectofscale.com
+# ═══════════════════════════════════════════════════════════
+#
+# ROUTING PHILOSOPHIE:
+# Jeder Task wird nach Komplexitaet und Wichtigkeit geroutet.
+# Teure Modelle nur fuer das was sie wirklich koennen.
+# Lokale Modelle (Ollama) fuer alles was keinen Cloud-Call braucht.
+#
+# TIER 0 — GOD MODE: Moonshot Kimi K2.5
+#   Kreative Strategie, Multi-Step Reasoning, tiefe Analyse
+#   Agents: JARVIS (strategisch), ELON (Deep Analysis)
+#
+# TIER 1 — QUALITY: Claude Opus / Sonnet / Haiku
+#   Qualitaetskritisch: Content, Sales, Code-Review, Entscheidungen
+#   Agents: STEVE, DONALD, ARCHI (Review), DONNA, IRIS, FELIX
+#
+# TIER 2 — WORKHORSE: Ollama Local (Qwen-Coder / Llama 3.1)
+#   Alltag: Bug-Fix, Testing, Daten sammeln, Formatierung
+#   Agents: ARCHI (Bugfix), ANDREAS, alle (Routine)
+#   KOSTEN: 0 EUR — laeuft lokal!
+#
+# TIER 3 — SPEED: Groq (Llama 3.3 70B)
+#   Blitz-schnell: Klassifizierung, Routing, Quick Answers
+#   Agents: JARVIS (Router), alle (Classification)
+#
+# ═══════════════════════════════════════════════════════════
+
+model_list:
+  # ── TIER 0 — GOD MODE (Kimi K2.5) ─────────────────────
+  - model_name: tier0-kimi
+    litellm_params:
+      model: openai/moonshot-v1-128k
+      api_base: https://api.moonshot.cn/v1
+      api_key: os.environ/MOONSHOT_API_KEY
+      max_tokens: 16384
+      temperature: 0.4
+    model_info:
+      description: "Kimi K2.5 — Deep Reasoning, Strategy, Multi-Step Planning"
+      tier: 0
+      cost_per_1k_input: 0.012
+      cost_per_1k_output: 0.012
+
+  - model_name: tier0-kimi-thinking
+    litellm_params:
+      model: openai/kimi-k2-0711-preview
+      api_base: https://api.moonshot.cn/v1
+      api_key: os.environ/MOONSHOT_API_KEY
+      max_tokens: 32768
+      temperature: 0.3
+    model_info:
+      description: "Kimi K2 Thinking — Extended Reasoning fuer komplexe Probleme"
+      tier: 0
+
+  # ── TIER 1 — QUALITY (Claude) ──────────────────────────
+  - model_name: tier1-opus
+    litellm_params:
+      model: anthropic/claude-opus-4-6
+      api_key: os.environ/ANTHROPIC_API_KEY
+      max_tokens: 8192
+      temperature: 0.3
+    model_info:
+      description: "Claude Opus — Hoechste Qualitaet fuer kritische Entscheidungen"
+      tier: 1
+
+  - model_name: tier1-sonnet
+    litellm_params:
+      model: anthropic/claude-sonnet-4-6
+      api_key: os.environ/ANTHROPIC_API_KEY
+      max_tokens: 8192
+      temperature: 0.5
+    model_info:
+      description: "Claude Sonnet — Exzellente Qualitaet, schneller als Opus"
+      tier: 1
+
+  - model_name: tier1-haiku
+    litellm_params:
+      model: anthropic/claude-haiku-4-5-20251001
+      api_key: os.environ/ANTHROPIC_API_KEY
+      max_tokens: 4096
+      temperature: 0.4
+    model_info:
+      description: "Claude Haiku — Schnell und guenstig fuer einfachere Quality-Tasks"
+      tier: 1
+
+  # ── TIER 2 — WORKHORSE (Ollama Local — 0 EUR!) ────────
+  - model_name: tier2-qwen-coder
+    litellm_params:
+      model: ollama/qwen2.5-coder:32b
+      api_base: http://jarvis-ollama:11434
+      max_tokens: 8192
+      temperature: 0.2
+    model_info:
+      description: "Qwen 2.5 Coder 32B — Lokaler Code-Spezialist"
+      tier: 2
+      cost_per_1k_input: 0.0
+      cost_per_1k_output: 0.0
+
+  - model_name: tier2-llama
+    litellm_params:
+      model: ollama/llama3.1:70b
+      api_base: http://jarvis-ollama:11434
+      max_tokens: 4096
+      temperature: 0.3
+    model_info:
+      description: "Llama 3.1 70B — Lokaler Allrounder"
+      tier: 2
+      cost_per_1k_input: 0.0
+      cost_per_1k_output: 0.0
+
+  - model_name: tier2-qwen-general
+    litellm_params:
+      model: ollama/qwen2.5:32b
+      api_base: http://jarvis-ollama:11434
+      max_tokens: 4096
+      temperature: 0.4
+    model_info:
+      description: "Qwen 2.5 32B — Datensammlung, Formatierung, einfache Analyse"
+      tier: 2
+      cost_per_1k_input: 0.0
+      cost_per_1k_output: 0.0
+
+  # ── TIER 3 — SPEED (Groq) ─────────────────────────────
+  - model_name: tier3-groq-fast
+    litellm_params:
+      model: groq/llama-3.3-70b-versatile
+      api_key: os.environ/GROQ_API_KEY
+      max_tokens: 4096
+      temperature: 0.3
+    model_info:
+      description: "Groq Llama 3.3 — Ultra-schnell fuer Routing & Klassifizierung"
+      tier: 3
+
+  - model_name: tier3-groq-small
+    litellm_params:
+      model: groq/llama-3.1-8b-instant
+      api_key: os.environ/GROQ_API_KEY
+      max_tokens: 2048
+      temperature: 0.2
+    model_info:
+      description: "Groq 8B — Blitz-schnell fuer einfachste Klassifizierungen"
+      tier: 3
+
+  # ── FALLBACK — OpenAI ──────────────────────────────────
+  - model_name: fallback-gpt4o
+    litellm_params:
+      model: openai/gpt-4o
+      api_key: os.environ/OPENAI_API_KEY
+      max_tokens: 4096
+    model_info:
+      description: "GPT-4o Fallback"
+
+router_settings:
+  routing_strategy: cost-based-routing
+  num_retries: 3
+  timeout: 180
+  retry_after: 5
+  allowed_fails: 2
+  cooldown_time: 60
+  fallbacks:
+    - tier0-kimi: [tier1-opus]
+    - tier0-kimi-thinking: [tier0-kimi, tier1-opus]
+    - tier1-opus: [tier1-sonnet]
+    - tier1-sonnet: [tier1-haiku]
+    - tier1-haiku: [tier3-groq-fast]
+    - tier2-qwen-coder: [tier2-llama, tier1-haiku]
+    - tier2-llama: [tier2-qwen-general, tier3-groq-fast]
+    - tier2-qwen-general: [tier3-groq-fast]
+    - tier3-groq-fast: [tier3-groq-small, tier1-haiku]
+    - tier3-groq-small: [tier1-haiku]
+
+litellm_settings:
+  drop_params: true
+  set_verbose: false
+  cache: true
+  cache_params:
+    type: redis
+    host: jarvis-redis
+    port: 6379
+    password: os.environ/REDIS_PASSWORD
+    ttl: 3600
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  database_url: os.environ/DATABASE_URL
+
+budget_manager:
+  max_budget: 500
+  budget_duration: monthly
+  alert_threshold: 0.8
+  model_max_budget:
+    tier0-kimi: 100
+    tier0-kimi-thinking: 50
+    tier1-opus: 200
+    tier1-sonnet: 100
+    tier3-groq-fast: 20
