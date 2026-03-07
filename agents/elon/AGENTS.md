@@ -11,7 +11,7 @@ read_when:
 ## Hierarchie
 
 ```
-DOM (Dominik Wrana) — Owner & Vision
+ — Owner & Vision
     └── JARVIS 🧠 — Chief Intelligence Operator
             ├── ELON 📊 — Chief Analyst & Systemoptimierer (ICH)
             ├── STEVE 📢 — Marketing-Teamleiter
